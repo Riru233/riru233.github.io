@@ -1,0 +1,1125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>关于使用Maven+Hadoop Client API对集群进行操作的说明</title>
+    <url>/2022/11/28/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E4%BD%BF%E7%94%A8Maven+Hadoop-Client-API%E5%AF%B9%E9%9B%86%E7%BE%A4%E8%BF%9B%E8%A1%8C%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="代码总览"><a href="#代码总览" class="headerlink" title="代码总览"></a>代码总览</h1><p>pom.xml</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.atguigu&lt;/groupId&gt;
+    &lt;artifactId&gt;HDFSClient&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;8&lt;/maven.compiler.target&gt;
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;
+            &lt;artifactId&gt;hadoop-client&lt;/artifactId&gt;
+            &lt;version&gt;3.1.3&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+            &lt;version&gt;1.7.30&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;
+</code></pre>
+<p>HdfsClient.java</p>
+<pre><code class="java">package com.atguigu;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * 此程序需求:
+ * 1.连接haddop102，并控制这个地址下的用户执行hadoop
+ *
+ * 2.创建文件路径: /xiyou/huaguoshan
+ *
+ */
+
+public class HdfsClient &#123;
+
+    private FileSystem fs;
+
+    @Before
+    public void init() throws URISyntaxException, IOException, InterruptedException &#123;
+        URI uri = new URI(&quot;hdfs://hadoop102:8020&quot;);         // java.net包下的URI
+        Configuration conf = new Configuration();               //org.appache.hadoop.conf包下的Configuration
+        String user = &quot;atguigu&quot;;                                 //双参数未指定user会Permission denied
+        //org.appache.hadoop.fs包下的FileSystem
+        fs = FileSystem.get(uri, conf, user);                       // ctrl+alt+f 局部变量变全局
+    &#125;
+
+    @After
+    public void close() throws IOException &#123;
+        fs.close();
+    &#125;
+
+    @Test
+    public void testmkdir() throws IOException &#123;
+        fs.mkdirs(new Path(&quot;/xiyou/huaguoshan&quot;));      //org.appache.hadoop.fs包下的Path
+    &#125;
+&#125;
+</code></pre>
+<h1 id="推荐工具"><a href="#推荐工具" class="headerlink" title="推荐工具"></a>推荐工具</h1><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>maven</td>
+<td>3.8.4(更新版本会不兼容)</td>
+</tr>
+<tr>
+<td>Intellij IDEA 专业版</td>
+<td>2021.3(需要激活，新版可能有)</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>1.8.0_212(推荐使用，只能用1.8的任何一个版本)</td>
+</tr>
+</tbody></table>
+<h1 id="更多资源与教程传送门"><a href="#更多资源与教程传送门" class="headerlink" title="更多资源与教程传送门"></a>更多资源与教程传送门</h1><a class="uico waves-effect waves-light" href="https://www.bilibili.com/video/BV1Qp4y1n7EN?p=46">
+    <div class="co_main">尚硅谷大数据Hadoop教程 <svg style="padding-top: 6px;" viewbox="32 48 898 898" width="1em" height="1em" fill="rgb(65, 65, 65)" aria-hidden="true" focusable="false"><path d="M912 302.3L784 376V224c0-35.3-28.7-64-64-64H128c-35.3 0-64 28.7-64 64v576c0 35.3 28.7 64 64 64h592c35.3 0 64-28.7 64-64V648l128 73.7c21.3 12.3 48-3.1 48-27.6V330c0-24.6-26.7-40-48-27.7zM712 792H136V232h576v560zm176-167l-104-59.8V458.9L888 399v226zM208 360h112c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H208c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8z"/></svg>
+    </div>
+    <div class="co_sub">API的准备</div>
+</a>
+
+<a class="uico waves-effect waves-light" href="https://www.bilibili.com/video/BV1Qp4y1n7EN?p=47">
+    <div class="co_main">尚硅谷大数据Hadoop教程 <svg style="padding-top: 6px;" viewbox="32 48 898 898" width="1em" height="1em" fill="rgb(65, 65, 65)" aria-hidden="true" focusable="false"><path d="M912 302.3L784 376V224c0-35.3-28.7-64-64-64H128c-35.3 0-64 28.7-64 64v576c0 35.3 28.7 64 64 64h592c35.3 0 64-28.7 64-64V648l128 73.7c21.3 12.3 48-3.1 48-27.6V330c0-24.6-26.7-40-48-27.7zM712 792H136V232h576v560zm176-167l-104-59.8V458.9L888 399v226zM208 360h112c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H208c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8z"/></svg></div>
+    <div class="co_sub">API创建文件夹</div>
+</a>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>hadoop</tag>
+        <tag>maven</tag>
+        <tag>idea</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第3章 NumPy 数值计算基础</title>
+    <url>/2022/11/28/%E7%AC%AC3%E7%AB%A0%20NumPy%20%E6%95%B0%E5%80%BC%E8%AE%A1%E7%AE%97%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h1 id="3-1-NumPy-多维数组"><a href="#3-1-NumPy-多维数组" class="headerlink" title="3.1 NumPy 多维数组"></a>3.1 NumPy 多维数组</h1><h2 id="3-1-1创建数组对象"><a href="#3-1-1创建数组对象" class="headerlink" title="3.1.1创建数组对象"></a>3.1.1创建数组对象</h2><h3 id="1-使用array函数创建数组对象"><a href="#1-使用array函数创建数组对象" class="headerlink" title="1.使用array函数创建数组对象"></a>1.使用array函数创建数组对象</h3><p>array函数的格式</p>
+<pre><code class="python">np.array(&lt;想要创建的数组&gt;,&lt;数据类型&gt;,&lt;接收int，指定数组应该具有的最小维数&gt;)
+</code></pre>
+<pre><code class="python">import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt     #Notebook导入库
+</code></pre>
+<p><font style="font-weight: 300">(1)创建ndarray数组</font></p>
+<pre><code class="python">#指定列表
+list_data = [1,3,5,7]
+w1 = np.array(list_data)
+print(&quot;【输出】通过NumPy输出的list为:\n&quot;,w1)
+</code></pre>
+<pre><code>【输出】通过NumPy输出的list为:
+ [1 3 5 7]
+</code></pre>
+<pre><code class="python">#指定元组
+tup_data = (1,3,5,7)
+w2 = np.array(tup_data)
+print(&quot;【输出】通过NumPy输出的tuple为:\n&quot;,w2)
+</code></pre>
+<pre><code>【输出】通过NumPy输出的tuple为:
+ [1 3 5 7]
+</code></pre>
+<pre><code class="python">#指定多维数组
+mul_data = [[1,3,5,7],[2,4,6,9]]
+w3 = np.array(mul_data)
+print(&quot;【输出】通过NumPy输出的多维数组为:\n&quot;,w3)
+</code></pre>
+<pre><code>【输出】通过NumPy输出的多维数组为:
+ [[1 3 5 7]
+ [2 4 6 9]]
+</code></pre>
+<p><font style="font-weight: 300">(2)在array函数中指定dtype</font></p>
+<pre><code class="python">list_data = [1,3,5,7]
+w1 = np.array(list_data)
+print(&quot;【输出】默认的dtype为\n&quot;,w1.dtype)
+w1 = np.array(list_data,dtype=&#39;int64&#39;)
+print(&quot;【输出】输出list的dtype为\n&quot;,w1.dtype)
+w1 = np.array(list_data,dtype=&#39;float64&#39;)
+print(&quot;【输出】输出list的dtype为\n&quot;,w1.dtype)
+</code></pre>
+<pre><code>【输出】默认的dtype为
+ int32
+【输出】输出list的dtype为
+ int64
+【输出】输出list的dtype为
+ float64
+</code></pre>
+<h3 id="2-专门创建数组的函数"><a href="#2-专门创建数组的函数" class="headerlink" title="2.专门创建数组的函数"></a>2.专门创建数组的函数</h3><p>(1)arange函数(按照范围与间隔创建数组)</p>
+<p>格式</p>
+<pre><code class="python">np.arange(&lt;起始值&gt;,&lt;终值&gt;,&lt;步长范围&gt;)
+</code></pre>
+<pre><code class="python">#默认步长为1
+wa = np.arange(10)
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [0 1 2 3 4 5 6 7 8 9]
+</code></pre>
+<pre><code class="python">#步长参数参数demo
+wa = np.arange(0,10,2)     #范围:从0到10，起始值与终值之间左闭右开取整，设定间隔数为2
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [0 2 4 6 8]
+</code></pre>
+<pre><code class="python">#同时还可以按照书本上的来
+wa = np.arange(0,1,0.2)      #范围:从0到1,起始值与终值之间左闭右开取整，设定间隔数为0.2
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [0.  0.2 0.4 0.6 0.8]
+</code></pre>
+<p>(2)linspace函数(按照范围与元素个数创建数组)</p>
+<p>格式</p>
+<pre><code class="python">np.linspace(&lt;起始值&gt;,&lt;终值&gt;,&lt;元素个数&gt;)
+</code></pre>
+<pre><code class="python">#演示
+wa = np.linspace(0,10,9)    #范围:从0到10,起始值与终值之间左闭右开取整，设定间隔数为20
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [ 0.    1.25  2.5   3.75  5.    6.25  7.5   8.75 10.  ]
+</code></pre>
+<p>(3)logspace函数(按照指数范围与元素个数创建等比数列，指数默认为10的指数)</p>
+<p>格式</p>
+<pre><code class="python">np.logspace(&lt;起始指数&gt;,&lt;终指数&gt;,&lt;元素个数&gt;)
+</code></pre>
+<pre><code class="python">#演示
+wa = np.logspace(0,2,3)
+print(&quot;【输出】&quot;,wa)
+wa = np.logspace(0,3,4)
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [  1.  10. 100.]
+【输出】 [   1.   10.  100. 1000.]
+</code></pre>
+<p>(4)zeros函数(创建一个全是0的矩阵)</p>
+<p>格式</p>
+<pre><code class="python">np.zeros([&lt;行&gt;,&lt;列&gt;])
+np.zeros(&lt;列&gt;)
+</code></pre>
+<pre><code class="python">#演示
+print(&quot;【输出】&quot;,np.zeros(4))    #创建1行4列的全零矩阵
+</code></pre>
+<pre><code>【输出】 [0. 0. 0. 0.]
+</code></pre>
+<pre><code class="python">print(&quot;【输出】&quot;,np.zeros([4,4]))    #创建4行4列的全零矩阵
+</code></pre>
+<pre><code>【输出】 [[0. 0. 0. 0.]
+ [0. 0. 0. 0.]
+ [0. 0. 0. 0.]
+ [0. 0. 0. 0.]]
+</code></pre>
+<pre><code class="python">print(&quot;【输出】&quot;,np.zeros([3,2]))    #创建3行2列的全零矩阵
+</code></pre>
+<pre><code>【输出】 [[0. 0.]
+ [0. 0.]
+ [0. 0.]]
+</code></pre>
+<p>(5)ones函数</p>
+<p>原理与zeros函数差不多，只不过是创建全1数组</p>
+<p>(6)diag函数(创建对角矩阵)</p>
+<p>格式</p>
+<pre><code class="python">np.diag(&lt;数组&gt;)
+</code></pre>
+<pre><code class="python">#Demo
+print(&quot;【输出】&quot;,np.diag([1,2,3,4,5,6]))    #创建1至6的对角矩阵
+</code></pre>
+<pre><code>【输出】 [[1 0 0 0 0 0]
+ [0 2 0 0 0 0]
+ [0 0 3 0 0 0]
+ [0 0 0 4 0 0]
+ [0 0 0 0 5 0]
+ [0 0 0 0 0 6]]
+</code></pre>
+<h3 id="3-1-2-ndarray对象属性和数据转换"><a href="#3-1-2-ndarray对象属性和数据转换" class="headerlink" title="3.1.2 ndarray对象属性和数据转换"></a>3.1.2 ndarray对象属性和数据转换</h3><p><font style="color: red">ndarray对象属性和说明</font></p>
+<table>
+<thead>
+<tr>
+<th align="center">属性</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ndim</td>
+<td align="center">秩，即数据轴的个数</td>
+</tr>
+<tr>
+<td align="center">shape</td>
+<td align="center">数组的维度</td>
+</tr>
+<tr>
+<td align="center">size</td>
+<td align="center">数组元素个数</td>
+</tr>
+<tr>
+<td align="center">dtype</td>
+<td align="center">数据类型</td>
+</tr>
+<tr>
+<td align="center">itemsize</td>
+<td align="center">数组中每个元素字节大小</td>
+</tr>
+</tbody></table>
+<pre><code class="python">#查看数组的属性
+wa = np.array([[1,2,3,4],[4,5,6,7],[7,8,9,10]],dtype=&quot;int64&quot;)
+print(&quot;【输出】秩为:&quot;,wa.ndim)
+print(&quot;【输出】数据形状为:&quot;,wa.shape)    #共3个维度，每个维度有4个元素
+print(&quot;【输出】元素总个数为:&quot;,wa.size)    #共有多少元素，包括维度内
+print(&quot;【输出】数据类型为:&quot;,wa.dtype)
+print(&quot;【输出】数组内每个元素的字节:&quot;,wa.itemsize)
+</code></pre>
+<pre><code>【输出】秩为: 2
+【输出】数据形状为: (3, 4)
+【输出】元素总个数为: 12
+【输出】数据类型为: int64
+【输出】数组内每个元素的字节: 8
+</code></pre>
+<pre><code class="python">#设置数组的属性
+wa.shape=4,3
+print(&quot;【输出】修改属性后的数组:&quot;,wa)        #相当于行列转换
+</code></pre>
+<pre><code>【输出】修改属性后的数组: [[ 1  2  3]
+ [ 4  4  5]
+ [ 6  7  7]
+ [ 8  9 10]]
+</code></pre>
+<pre><code class="python">#转换数组的类型
+print(&quot;【输出】&quot;,wa.dtype)
+wa=wa.astype(np.float64)      #转换核心
+print(&quot;【输出】&quot;,wa.dtype)
+</code></pre>
+<pre><code>【输出】 int64
+【输出】 float64
+</code></pre>
+<h3 id="3-1-3-生成随机数"><a href="#3-1-3-生成随机数" class="headerlink" title="3.1.3 生成随机数"></a>3.1.3 生成随机数</h3><p>格式</p>
+<pre><code class="python">#整数
+np.random.randint(&lt;最小值&gt;,&lt;最大值&gt;,size=(&lt;维度&gt;,&lt;每个维度内的个数&gt;))
+#[0,1]随机小数
+np.random.randint(&lt;维度&gt;,&lt;每个维度内的个数&gt;)
+</code></pre>
+<pre><code class="python">#生成随机整数
+print(&quot;【输出】&quot;,np.random.randint(100,200,size=(2,5)))
+</code></pre>
+<pre><code>【输出】 [[163 172 183 141 198]
+ [158 169 190 101 154]]
+</code></pre>
+<p>持续更新中…</p>
+<p>敬请期待</p>
+<pre><code class="python">#生成[0,1]的随机小数
+print(&quot;5列&quot;)
+print(&quot;【输出】&quot;,np.random.rand(5))     #1行5列数据
+print(&quot;4行2列&quot;)
+print(&quot;【输出】&quot;,np.random.rand(4,2))    #4行2列数据
+</code></pre>
+<pre><code>5列
+【输出】 [0.43027083 0.89884511 0.47557747 0.35991609 0.50379094]
+4行2列
+【输出】 [[0.39204969 0.10542467]
+ [0.28088711 0.08759401]
+ [0.50841722 0.46531397]
+ [0.11683341 0.7445252 ]]
+</code></pre>
+<p>NumPy生成随机数可以类比random模块，优点是无需额外导入random模块</p>
+<p>random模块常用的随机数生成的函数(需要积累)</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">seed</td>
+<td align="center">确定随机数生成器的种子</td>
+</tr>
+<tr>
+<td align="center">permutation</td>
+<td align="center">返回一个序列的随机排列或者返回一个随机排列的范围</td>
+</tr>
+<tr>
+<td align="center">shuffle</td>
+<td align="center">对一个序列进行随机排序</td>
+</tr>
+<tr>
+<td align="center">binomial</td>
+<td align="center">产生二项分布的随机数</td>
+</tr>
+<tr>
+<td align="center">normal</td>
+<td align="center">产生正态分布的随机数</td>
+</tr>
+<tr>
+<td align="center">beta</td>
+<td align="center">产生β分布的随机数</td>
+</tr>
+<tr>
+<td align="center">chisquare</td>
+<td align="center">产生卡方分布的随机数</td>
+</tr>
+<tr>
+<td align="center">gamma</td>
+<td align="center">产生γ分布的随机数</td>
+</tr>
+<tr>
+<td align="center">uniform</td>
+<td align="center">产生在[0,1)中均匀分布的随机数</td>
+</tr>
+</tbody></table>
+<h2 id="3-1-4-数组变换"><a href="#3-1-4-数组变换" class="headerlink" title="3.1.4 数组变换"></a>3.1.4 数组变换</h2><h3 id="1-数组重塑"><a href="#1-数组重塑" class="headerlink" title="1.数组重塑"></a>1.数组重塑</h3><pre><code class="python">
+</code></pre>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>jupyter</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>大数据仓库——hive数据库的操作</title>
+    <url>/2022/10/17/%E5%A4%A7%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E2%80%94%E2%80%94hive%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="数据库定义语言"><a href="#数据库定义语言" class="headerlink" title="数据库定义语言"></a>数据库定义语言</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><pre><code class="mysql">CREATE (DATABASE|SCHEMAS) [IF NOT EXISTS]  database_name:
+</code></pre>
+<h2 id="显示数据库"><a href="#显示数据库" class="headerlink" title="显示数据库"></a>显示数据库</h2><pre><code class="mysql">SHOW (DATABASE|SCHEMAS)
+</code></pre>
+<h2 id="查询hive数据库信息"><a href="#查询hive数据库信息" class="headerlink" title="查询hive数据库信息"></a>查询hive数据库信息</h2><pre><code class="mysql">DESCRIBE|DESC (DATABASES|SCHEMAS) [EXTENDED] db_name:
+</code></pre>
+<h2 id="查看数据库"><a href="#查看数据库" class="headerlink" title="查看数据库"></a>查看数据库</h2><pre><code class="mysql">USE db_name
+</code></pre>
+<h2 id="修改数据库"><a href="#修改数据库" class="headerlink" title="修改数据库"></a>修改数据库</h2><pre><code class="mysql">/*修改数据库属性*/
+ALTER (DATABASE|SCHEMA) database_name SET DBPROPERTIES
+(property_name=property_value,...)
+/*修改数据库所有者*/
+ALTER (DATABASE|SCHEMA) database_name SET OWNER [USER|ROLE] user_or_role;
+</code></pre>
+<h2 id="删除数据库"><a href="#删除数据库" class="headerlink" title="删除数据库"></a>删除数据库</h2><pre><code class="mysql">DROP (DATABASE!SCHEMA) [IF EXISTS] database_name [RESTRICT|CASCADE]
+</code></pre>
+<h1 id="数据库操纵语言"><a href="#数据库操纵语言" class="headerlink" title="数据库操纵语言"></a>数据库操纵语言</h1><h2 id="CREATE-TABLE句式分析"><a href="#CREATE-TABLE句式分析" class="headerlink" title="CREATE TABLE句式分析"></a>CREATE TABLE句式分析</h2><pre><code class="mysql">CREATE [TEMPORARY] [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.]table_name
+/*[TEMPORARY]: 可选，用于指定创建的表为临时表，不支持分区和索引*/
+/*[EXTERNAL]: 可选，用于指定创建的表为外部表，若不指定则默认创建内部表*/
+/*[IF NOT EXISTS]: 可选，建表时添加上，如果表存在，也不会抛错，但表不会创建*/
+/*[db_name.]: 可选，用于指定创建表时存放的数据库，若没有指定默认在当前数据库创建*/
+[(col_name data_type [COMMENT col_comment],...[constraint_specification])]
+</code></pre>
+<h2 id="CREATE-TABLE句式的语法格式"><a href="#CREATE-TABLE句式的语法格式" class="headerlink" title="CREATE TABLE句式的语法格式"></a>CREATE TABLE句式的语法格式</h2><pre><code class="mysql">[COMMENT table_comment]
+/*COMMENT table_comment:指定表格描述，表注释*/
+
+[PARTIONED BY (col_name, data_type, [COMMENT col_comment]]
+/*用于创建分区表，指定分区名(col_name)、分区类型(data)和分区描述/注释(COMMENT col_comment)*/
+ 
+[CLUSTERED BY (col_name, col_name,...) [SORTED BY (col_name [ASC|DESC], ...)]] INTO num_buckets BUCKETS]
+/*可选，用于创建分桶表，指定分桶字段(col_name)，根据指定的字段对桶内的数据进行升序(ASC,默认)或者(DESC)排序，以及桶的数量(num_buckets)*/
+[SKEWED BY (col_name, col_name,...)] ON ((col_value, col_value, ...),...) [STORED AS DIRECTORIES]
+/*
+可选，用于创建倾斜表解决Hive中的数据倾斜问题(数据的key分布不均)
+SKEWED BY col_name: 指定出现数据倾斜的字段
+ON col_value： 指定数据倾斜的字段中数据倾斜的值
+STORED AS DIRECTORIES: 将数据倾斜字段中频繁出现的值拆分为文件夹，若没有指定则拆分为文件
+*/
+[
+    [ROW FORMAT row_format] [STORED AS file_format] | STORED BY &#39;storage.handler.class.name&#39; [WITH SERDEPROPERTIES (...)]
+]
+/*
+[ROW FORMAT row_format]:可选，用来序列化行对象。row format就是用于指定序列化和反序列化的规则
+如果 ROW FORMAT没有指定或指定了 ROW FORMAT DELIMITED就会使用内置的SerDe。
+[STORED AS file_format]: 可选，用于创建表时指定hive表的文件存储格式。文件类型为:TEXTFILE、SEQUENCEFILE、PARQUEFILE、RCFILE
+*/
+[LOCATION hdfs_path] /*可选，用于指定Hive表(针对external table)在HDFS的存储位置*/
+[TBLPROPERTIES (property_name=property_value, ...)] /*可选，用于指定表属性*/
+[AS select_statement]; /*可选，用于创建表时将查询结果插入表中*/
+</code></pre>
+<h2 id="Serde和表属性"><a href="#Serde和表属性" class="headerlink" title="Serde和表属性"></a>Serde和表属性</h2><p>Hive中的Serde分为<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>自定义Serde<code>&lt;/font&gt;</code>和<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>内置Serde<code>&lt;/font&gt;</code></p>
+<ul>
+<li>使用自定义Serde时需要在<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>CREATE TABLE句式<code>&lt;/font&gt;</code>中指定<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>ROW FORMAT子句<code>&lt;/font&gt;</code>的<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>row_format<code>&lt;/font&gt;</code>值为<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>Serde<code>&lt;/font&gt;</code>，并根据Serde类型<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>实现类<code>&lt;/font&gt;</code>。</li>
+<li>内置Serde需要在CREATE TABLE句式中指定ROW FORMAT子句的row_format值为<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>DELIMITED<code>&lt;/font&gt;</code></li>
+</ul>
+<h3 id="Serde–内置Serde"><a href="#Serde–内置Serde" class="headerlink" title="Serde–内置Serde"></a>Serde–内置Serde</h3><table>
+<thead>
+<tr>
+<th align="center">内置Serde</th>
+<th align="center">介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">FIELDS TERMINATED BY char [ESCAPED BY char]</td>
+<td align="center">FIELDS TERMINATED指定字段分隔符；ESCAPED指定转义符，避免数据存在与字段分隔符一样的字符，造成混淆。</td>
+</tr>
+<tr>
+<td align="center">COLLECTION ITEMS TERMINATED BY char</td>
+<td align="center">指定集合中元素的分隔符，集合包含数据类型为MAP、ARRAY、ARRAY和STRUCT。</td>
+</tr>
+<tr>
+<td align="center">MAP KEYS TERMINATED BY char</td>
+<td align="center">指定MAP中Key和Value的分隔符。</td>
+</tr>
+<tr>
+<td align="center">LINES TERMINATED BY char</td>
+<td align="center">指定行分隔符。</td>
+</tr>
+<tr>
+<td align="center">NULL DEFINED BY char</td>
+<td align="center">自定义空值格式，Hive默认为’\N’。</td>
+</tr>
+</tbody></table>
+<h3 id="Serde——自定义Serde"><a href="#Serde——自定义Serde" class="headerlink" title="Serde——自定义Serde"></a>Serde——自定义Serde</h3><pre><code class="hive">ROW FORMAT SERDE
+&#39;org.apache.hadoop.hive.serde2.RegexSerDe&#39;
+WITH SERDEPROPERTIES (&quot;input.regex&quot;=&quot;regex&quot;)
+STORED AS TEXTFILE;
+</code></pre>
+<blockquote>
+<p>使用正则表达式序列化/反序泪花数据表的每一行数据，其中regex用于指定正则表达式</p>
+</blockquote>
+<pre><code class="hive">ROW FORMAT SERDE
+&#39;org.apache.hive.hcatalog.data.JsonSerDe&#39;
+STORED AS TEXTFILE;
+</code></pre>
+<blockquote>
+<p>使用JSON格式序列化/反序列化数据表的每一行数据</p>
+</blockquote>
+<pre><code class="hive">CREATE TABLE my_table(a string,b string,...)
+ROW FORMAT SERDE
+&#39;org.apache.hadoop.hive.serde2.OpenCSVSerde&#39;
+WITH SERDEPROPERTIES(
+&quot;separatorChar&quot;=&quot;\t&quot;,
+&quot;quoteChar&quot;=&quot;&quot;,
+&quot;escapeChar&quot;=&quot;\\&quot;
+)
+STORED AS TEXTFILE;
+</code></pre>
+<blockquote>
+<p>使用CSV格式序列化/反序列化数据表的每一行数据，其中separatorChar用于指定CSV文件的分隔符;quoteChar用于指定CSV文件的应用符;escapeChar用于指定CSV文件的转义符</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">属性</th>
+<th align="center">值</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">comment</td>
+<td align="center">table_comment</td>
+<td align="center">表描述</td>
+</tr>
+<tr>
+<td align="center">hbase.table.name</td>
+<td align="center">table_name</td>
+<td align="center">集成HBase</td>
+</tr>
+<tr>
+<td align="center">immutable</td>
+<td align="center">TRUE or FALSE</td>
+<td align="center">防止意外更新，若为TRUE，则无法通过Insert实现数据的更新和插入</td>
+</tr>
+<tr>
+<td align="center">transactional</td>
+<td align="center">TRUE or FALSE</td>
+<td align="center">指定表是否支持ACID(更新、插入、删除)</td>
+</tr>
+<tr>
+<td align="center">auto.purge</td>
+<td align="center">TRUE or FALSE</td>
+<td align="center">若为TRUE，则删除或者覆盖的数据会不经过回收站直接删除</td>
+</tr>
+<tr>
+<td align="center">EXTERNAL</td>
+<td align="center">TRUE or FALSE</td>
+<td align="center">内部表和外部表的转换</td>
+</tr>
+</tbody></table>
+<h2 id="数据表简介"><a href="#数据表简介" class="headerlink" title="数据表简介"></a>数据表简介</h2><p><code>&lt;font color=&quot;#FF2323&quot;&gt;</code>内部表 managed_table<code>&lt;/font&gt;</code></p>
+<p>数据由Hive自身管理，数据文件存储在Hive配置文件中参数hive.metastore.warehouse.dir指定的HDFS路径。当删除内部表时，内部表的元数据和数据文件会一同删除。</p>
+<p><code>&lt;font color=&quot;#FF2323&quot;&gt;</code>外部表External_table<code>&lt;/font&gt;</code></p>
+<p>数据由HDFS管理，数据文件存储在创建表时LOCATION子句指定的HDFS路径，若不指定则存储在Hive配置文件中参数hive.metastore.warehouse.dir指定的HDFS路径。当删除外部表时，外部表只会删除元数据，不会删除数据文件。</p>
+<pre><code class="hive">CREATE TABLE compactortest(
+id int,name string
+)
+TBLPROPERTIES (&quot;transactional&quot;=&quot;true&quot;,
+&quot;compactor.mapreduce.map.memory.mb&quot;=&quot;2048&quot;, /*指定紧缩map作业的内存属性*/
+&quot;compactorthreshold.hive.compactor.delta.num.threshold&quot;=&quot;4&quot;,
+/*如果有4个增量目录，则触发轻度紧缩*/
+&quot;compactorthreshold.hive.compactor.delta.pct.threshold&quot;=&quot;0.5&quot;,
+/*如果增量文件的大小与基础文件的大小比率大于50%，则触发深度紧缩*/
+);
+</code></pre>
+<h2 id="查看数据表"><a href="#查看数据表" class="headerlink" title="查看数据表"></a>查看数据表</h2><p>切换数据库<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>hive_database<code>&lt;/font&gt;</code></p>
+<pre><code class="hive">USE hive_database;
+</code></pre>
+<p>查看数据库<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>hive_database<code>&lt;/font&gt;</code>的所有数据表</p>
+<pre><code class="hive">SHOW TABLES;
+</code></pre>
+<p>查看指定数据表的结构信息</p>
+<pre><code class="hive">DESCRIBE|DESC [FORMATTED] table_name;
+</code></pre>
+<p>通过模糊查询查看数据库<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>hive_database<code>&lt;/font&gt;</code>中数据表名称首字母为“m”的数据表</p>
+<pre><code class="hive">SHOW TABLES LIKE &quot;m*&quot;;
+</code></pre>
+<p>查看数据库<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>hive_database<code>&lt;/font&gt;</code>中的内部表<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>managed_table<code>&lt;/font&gt;</code>表结构的基本信息</p>
+<pre><code class="hive">DESC managed_table;
+</code></pre>
+<p>查看数据库<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>hive_database<code>&lt;/font&gt;</code>中外部表<code>&lt;font color=&quot;#FF2323&quot;&gt;</code>external_table<code>&lt;/font&gt;</code>表结构的详细信息</p>
+<pre><code class="hive">DESC FORMATTED external_table;
+</code></pre>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>hive</tag>
+        <tag>数据仓库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hadoop环境的基础配置——准备工作</title>
+    <url>/2022/09/05/Hadoop%E7%8E%AF%E5%A2%83%E7%9A%84%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE%E2%80%94%E2%80%94%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C/</url>
+    <content><![CDATA[<p>Java版本:1.8.0 212</p>
+<p>Hadoop版本:3.1.3</p>
+<h1 id="CentOS-7的安装"><a href="#CentOS-7的安装" class="headerlink" title="CentOS 7的安装"></a>CentOS 7的安装</h1><p>此处不再说明，就是要注意一下勾选gnome桌面就行</p>
+<h1 id="克隆虚拟机"><a href="#克隆虚拟机" class="headerlink" title="克隆虚拟机"></a>克隆虚拟机</h1><p>此处不再说明，尤其注意的是要克隆三台机器<br>Hadoop100<br>Hadoop102<br>Hadoop103<br>Hadoop104</p>
+<h1 id="网络配置"><a href="#网络配置" class="headerlink" title="网络配置"></a>网络配置</h1><p>此操作在虚拟机内进行</p>
+<p>首先查看一下虚拟网络配置</p>
+<p>点击编辑-&gt;虚拟网络编辑器</p>
+<p>点击vmnet8(默认)，类型须是NAT模式，点击NAT设置</p>
+<p>网关IP对应配置的GATEWAY和DNS1</p>
+<p>关闭NAT设置窗口后再点击DHCP设置</p>
+<p>起始IP地址和结束IP地址对应划分的范围，在这个范围内的IP地址对应IPADDR</p>
+<p>关闭DHCP设置，这时候可以发现子网掩码，对应NETMASK</p>
+<p>在虚拟机内输入 <code>su</code> 进入root环境</p>
+<p>然后进入网络配置文件 <code>ifcfg-ens33</code></p>
+<pre><code>vi /etc/sysconfig/network-scripts/ifcfg-ens33
+</code></pre>
+<p>初始网络配置文档如下</p>
+<pre><code class="config">TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=dhcp
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=ens33
+UUID=&quot;0f048760-8aa2-43cb-85ab-0ce71f1ff515&quot;
+DEVICE=ens33
+ONBOOT=yes
+</code></pre>
+<p>更改网络为静态</p>
+<pre><code>BOOTPROTO=static
+</code></pre>
+<p>在这个配置文件添加以下内容</p>
+<pre><code>IPADDR=192.168.152.102
+GATEWAY=192.168.152.2
+NETMASK=255.255.255.0
+DNS1=192.168.152.2
+</code></pre>
+<p>其中共有3台机器，IPADDR需要根据机器的情况进行改变</p>
+<p>在Hadoop100中</p>
+<pre><code>IPADDR=192.168.152.100
+</code></pre>
+<p>在Hadoop103中</p>
+<pre><code>IPADDR=192.168.152.103
+</code></pre>
+<p>在Hadoop104中</p>
+<pre><code>IPADDR=192.168.152.104
+</code></pre>
+<p>输入 <code>:wq</code> 保存并退出</p>
+<h1 id="Java和Hadoop的环境配置"><a href="#Java和Hadoop的环境配置" class="headerlink" title="Java和Hadoop的环境配置"></a>Java和Hadoop的环境配置</h1><p>前提:在XShell中执行，输入 <code>su</code> 进入root环境</p>
+<p>首先检查自带的Java环境</p>
+<pre><code>rpm -qa | grep Java
+</code></pre>
+<p>如果存在自带的Java环境，开始执行</p>
+<pre><code>yum remove java-1.7.0-openjdk*
+yum remove java-1.8.0-openjdk*
+</code></pre>
+<p>然后输入如下命令退出root模式，并进入用户目录</p>
+<pre><code>exit
+cd ~
+</code></pre>
+<p>进入主目录后，输入 <code>rz</code>将下载好的Java压缩包(比如:<code>jdk-8u212-linux-x64.tar.gz</code>)和Hadoop压缩包(比如:<code>hadoop-3.1.3.tar.gz</code>)导入到这个目录</p>
+<p>之后进入到导出的位置，进入root用户</p>
+<pre><code>cd /opt/module
+su
+</code></pre>
+<p>输入以下命令解压(比如自己的主目录是 <code>/home/hizuna</code>)</p>
+<pre><code>tar -xzvf /home/hizuna/jdk-8u212-linux-x64.tar.gz
+tar -xzvf /home/hizuna/hadoop-3.1.3.tar.gz
+</code></pre>
+<p>在这里安装包已经安装完成，接下来该配置环境变量了，输入以下命令</p>
+<pre><code>cd /etc/profile.d
+vi myprf.sh
+</code></pre>
+<p>开始配置环境变量</p>
+<pre><code>#配置Hadoop的环境变量
+export HADOOP_HOME=/opt/module/hadoop-3.1.3
+export PATH=$PATH:$HADOOP_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin
+#配置Java的环境变量
+export JAVA_HOME=/opt/module/jdk1.8.0_212
+export PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:/lib/dt.jar:/lib/tools.jar
+</code></pre>
+<p>在配置完后输入 :wq退出</p>
+<p>然后输入</p>
+<pre><code>source myprf.sh
+</code></pre>
+<p>生效对环境变量的更改</p>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hadoop中MapReduce的序列化与反序列化介绍</title>
+    <url>/2022/11/17/Hadoop%E4%B8%ADMapReduce%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%8B%E7%BB%8D/</url>
+    <content><![CDATA[<h1 id="序列化概述"><a href="#序列化概述" class="headerlink" title="序列化概述"></a>序列化概述</h1><h4 id="1-什么是序列化"><a href="#1-什么是序列化" class="headerlink" title="1)  什么是序列化"></a>1)  什么是序列化</h4><p>​    <font style="font- weight: lighter">序列化</font>就是<code>把内存中的对象转换成字节序列</code>(或者其他数据传输协议)以便于存储到磁盘(持久化)和网络传输</p>
+<p>​    <font style="font- weight: lighter">反序列化</font>就是将收到字节序列(或者其他数据传输协议)或者是<code>磁盘的持久化数据转换成内存中的对象</code></p>
+<h4 id="2-为什么要序列化"><a href="#2-为什么要序列化" class="headerlink" title="2) 为什么要序列化"></a>2) 为什么要序列化</h4><p>​    一般来说，“活的”对象只能生存在内存中，关机断电就没有了。而且“活的”对象只能由本地进程使用，不能被发送到网络上的另一台计算机。然而<code>序列化可以存储“活的”对象，可以将“活的”对象发送到远程计算机。</code></p>
+<h4 id="3-为什么不用Java的序列化"><a href="#3-为什么不用Java的序列化" class="headerlink" title="3)为什么不用Java的序列化"></a>3)为什么不用Java的序列化</h4><p>​    Java的序列化是一个重量级序列化框架，一个对象被序列化之后，会附带很多额外的信息(各种校验信息、Header、继承体系等)，不方便于在网络中高效传输。</p>
+<h1 id="序列化实现"><a href="#序列化实现" class="headerlink" title="序列化实现"></a>序列化实现</h1><p>这里给出如下数据集，命名为<code>phone_data.txt</code>,内容如下:</p>
+<pre><code>1    13736230513    192.196.100.1    www.atguigu.com    2481    24681    200
+2    13846544121    192.196.100.2            264    0    200
+3     13956435636    192.196.100.3            132    1512    200
+4     13966251146    192.168.100.1            240    0    404
+5     18271575951    192.168.100.2    www.atguigu.com    1527    2106    200
+6     84188413    192.168.100.3    www.atguigu.com    4116    1432    200
+7     13590439668    192.168.100.4            1116    954    200
+8     15910133277    192.168.100.5    www.hao123.com    3156    2936    200
+9     13729199489    192.168.100.6            240    0    200
+10     13630577991    192.168.100.7    www.shouhu.com    6960    690    200
+11     15043685818    192.168.100.8    www.baidu.com    3659    3538    200
+12     15959002129    192.168.100.9    www.atguigu.com    1938    180    500
+13     13560439638    192.168.100.10            918    4938    200
+14     13470253144    192.168.100.11            180    180    200
+15     13682846555    192.168.100.12    www.qq.com    1938    2910    200
+16     13992314666    192.168.100.13    www.gaga.com    3008    3720    200
+17     13509468723    192.168.100.14    www.qinghua.com    7335    110349    404
+18     18390173782    192.168.100.15    www.sogou.com    9531    2412    200
+19     13975057813    192.168.100.16    www.baidu.com    11058    48243    200
+20     13768778790    192.168.100.17            120    120    200
+21     13568436656    192.168.100.18    www.alibaba.com    2481    24681    200
+22     13568436656    192.168.100.19            1116    954    200
+</code></pre>
+<p>然后打开idea，新建一个mapreduce的maven工程</p>
+<p><code>pom.xml</code>中添加如下内容</p>
+<pre><code class="xml">    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;
+            &lt;artifactId&gt;hadoop-client&lt;/artifactId&gt;
+            &lt;version&gt;3.1.3&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+            &lt;version&gt;1.7.30&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+</code></pre>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Particle S主题使用帮助</title>
+    <url>/2022/11/28/Particle%20S%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8%E5%B8%AE%E5%8A%A9/</url>
+    <content><![CDATA[<h1 id="关于Particle-S主题"><a href="#关于Particle-S主题" class="headerlink" title="关于Particle S主题"></a>关于Particle S主题</h1><blockquote>
+<p>原作介绍:</p>
+<p>介绍：hexo 主题 particle，诞生原因是因为建多了两个博客，所以自己开发了这个主题来作为 3个博客的主题</p>
+<p>目前有 full、night 和 maiden 三个主题样式</p>
+</blockquote>
+<p><a href="https://github.com/riru233/circles-hexo-theme1">仓库地址</a></p>
+<p>此主题正式命名为Particle S，原名为CirCle S for Particle</p>
+<p><a href="https://riru233.github.io/">点击此处预览主题</a></p>
+<p>此主题基于Particle主题，更多帮助文档请点击以下内容进入，原主题的灵魂尚在哦</p>
+<p><a href="https://github.com/korilin/hexo-theme-particle">Particle主题</a></p>
+<p>在说完原作后，接下来该介绍该主题了</p>
+<p>Particle S为Particle的升级版，具备了搜索、音乐、卡片、主题一键切换等多种功能，vue版本也由2升级为3</p>
+<p>在配置这个主题之前需要保证自己已经安装Hexo和Node.js</p>
+<h1 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h1><h2 id="主题安装"><a href="#主题安装" class="headerlink" title="主题安装"></a>主题安装</h2><p>进入主题目录后，克隆此仓库</p>
+<pre><code class="shell">cd theme &amp;&amp; git clone https://github.com/riru233/hexo-theme-particles hexo-theme-particles
+</code></pre>
+<p>安装主题后开启主题的方法:在<font color="#44bbee">hexo的根目录 </font>下的 <code>_config.yml</code>中，进行如下配置</p>
+<pre><code class="yaml">theme: hexo-theme-particles
+</code></pre>
+<h2 id="关闭-Hexo-自带-highlight"><a href="#关闭-Hexo-自带-highlight" class="headerlink" title="关闭 Hexo 自带 highlight"></a>关闭 Hexo 自带 highlight</h2><p>在 <font color="#44bbee">hexo的根目录 </font>下的 <code>_config.yml</code>中，将 highlight 下的 enable 设置为 false，如下：</p>
+<pre><code class="yml"># _config.yml
+highlight:
+  enable: false
+  line_number: true
+  auto_detect: false
+  tab_replace: &quot;&quot;
+  wrap: true
+  hljs: false
+prismjs:
+  enable: false
+  preprocess: true
+  line_number: true
+  tab_replace: &quot;&quot;
+</code></pre>
+<p>修改完请清除缓存</p>
+<pre><code class="shell">$ hexo cl
+$ hexo g
+</code></pre>
+<p>如果使用图片来作为背景，请使用 background-image 属性，不要使用 background 属性。</p>
+<p>并且记得不要忘记加上双引号，否则可能会出现错误</p>
+<pre><code class="yaml"># 主页顶部背景样式
+# 正确示例如下：
+# 图片背景： home_background: &quot;background-image:url(&#39;../home.jpg&#39;)&quot;
+# 颜色背景： home_background: &quot;background:black&quot;
+home_background: &quot;background-image:url(&#39;../home.jpg&#39;)&quot;
+</code></pre>
+<h2 id="站点-footer-配置"><a href="#站点-footer-配置" class="headerlink" title="站点 footer 配置"></a>站点 footer 配置</h2><p>考虑到博客部署在服务器并使用自己域名的情况，按国家规定需要在网站下边添加备案消息</p>
+<p>如没有需要显示备案消息的可以关闭</p>
+<pre><code class="yaml"># 页面尾部，建站时间
+footer:
+  since: 2017
+  # 服务器自定义域名备案底部字段
+  ICP:
+    enable: true
+    code: 琼ICP备xxxxxx号
+</code></pre>
+<h2 id="其他配置"><a href="#其他配置" class="headerlink" title="其他配置"></a>其他配置</h2><p>这些配置请自行配置，这里不做过多的描述</p>
+<p>Gitalk</p>
+<pre><code class="yaml">gitalk:
+  enable: true
+  clientID: # GitHub Application Client ID
+  clientSecret: # GitHub Application Client Secret
+  repo: hexo-theme-particle # The name of repository of store comments
+  owner: korilin # GitHub repo owner
+  admin: korilin # GitHub repo owner and collaborators, only these guys can initialize github issues
+  language: zh-CN # en, zh-CN, zh-TW, es-ES, fr, ru, de, pl and ko are currently available.
+</code></pre>
+<p>站点图标</p>
+<pre><code class="yaml">cirs_img: cirs.png     # 存于主题的source路径中
+</code></pre>
+<h1 id="操作入门"><a href="#操作入门" class="headerlink" title="操作入门"></a>操作入门</h1><h2 id="总体设计语言"><a href="#总体设计语言" class="headerlink" title="总体设计语言"></a>总体设计语言</h2><p>欢迎使用Particle S主题，此主题致敬Particle，整个界面简洁友好，各种组件都收纳到一个智能按钮内 ，拥有音乐播放器等功能</p>
+<p><img src="https://pic.imgdb.cn/item/6384c63616f2c2beb113969f.jpg" alt="界面预览"></p>
+<h3 id="伪Material-You风格"><a href="#伪Material-You风格" class="headerlink" title="伪Material You风格"></a>伪Material You风格</h3><p><img src="https://pic.imgdb.cn/item/637fb71a16f2c2beb1b4a7f2.png" alt="普通界面风格"></p>
+<h3 id="保留原作灵魂的分类页"><a href="#保留原作灵魂的分类页" class="headerlink" title="保留原作灵魂的分类页"></a>保留原作灵魂的分类页</h3><p><img src="https://pic.imgdb.cn/item/637fb72c16f2c2beb1b4b3ce.png" alt="分类页"></p>
+<h2 id="怎么用音乐播放器？"><a href="#怎么用音乐播放器？" class="headerlink" title="怎么用音乐播放器？"></a>怎么用音乐播放器？</h2><p><img src="https://pic.imgdb.cn/item/637fb75f16f2c2beb1b4d62d.png" alt="播放器预览"></p>
+<p>Particle S主题不同于Particle主题的第一个地方在于支持悬浮Aplayer音乐播放器</p>
+<p>无需下载npm包，只需按照以下步骤来做，即可享受音乐的快感</p>
+<h3 id="详细说明引导"><a href="#详细说明引导" class="headerlink" title="详细说明引导"></a>详细说明引导</h3><p>此主题内置Aplayer插件</p>
+<p>*你可以在主题中 <code>&lt;font color=#44bbee&gt;</code>layout的_partial路径 <code>&lt;/font&gt;</code>下，找到aplayer.ejs，然后对歌曲进行手动添加哦</p>
+<p>有关播放器的帮助详见</p>
+<a class="uico waves-effect waves-light" href="https://aplayer.js.org/#/zh-Hans/?id=%E5%90%B8%E5%BA%95%E6%A8%A1%E5%BC%8F">
+<div class="co_main">APlayer帮助</div>
+<div class="co_sub">如何配置aplayer</div>
+</a>
+
+<p>播放器默认打开，如果不想显示播放器的话可以在主题配置文件 <code>_config.yml</code>中找到aplayer，然后将enable属性改为false即可关闭</p>
+<pre><code class="yaml">aplayer:
+    enable: false
+</code></pre>
+<h2 id="顶部导航栏如何使用？"><a href="#顶部导航栏如何使用？" class="headerlink" title="顶部导航栏如何使用？"></a>顶部导航栏如何使用？</h2><p>只需在src内输入跳转链接即可</p>
+<pre><code class="yaml"># 导航栏链接
+menu:
+  主站:
+    src: /
+  归档:
+    src: /archives
+  分类:
+    src: /categories
+  标签云:
+    src: /tags
+  关于:
+    src: /about
+</code></pre>
+<h2 id="智慧卡片"><a href="#智慧卡片" class="headerlink" title="智慧卡片"></a>智慧卡片</h2><p>原本是Particle博客主页右栏的内容，而移动端无法显示</p>
+<p><img src="https://pic.imgdb.cn/item/637fb77f16f2c2beb1b4edb5.png" alt="Particle"></p>
+<p>如今，只需要点击右下角的<img src="https://pic.imgdb.cn/item/6384c97a16f2c2beb11b3630.jpg" alt="智慧卡片按钮" style="zoom:33%;">按钮</p>
+<p>焕然一新的卡片化布局呈现在面前，这适合所有chromium架构浏览器与FireFox浏览器</p>
+<p><img src="https://pic.imgdb.cn/item/6384c67316f2c2beb1143709.jpg" alt="智慧按钮——卡片化布局"></p>
+<p>卡片的毛玻璃风格显得 <code>&lt;font style=&quot;color: #6eb4ed&quot;&gt;</code>更为美观 <code>&lt;/font&gt;</code></p>
+<h3 id="配置文件说明"><a href="#配置文件说明" class="headerlink" title="配置文件说明"></a>配置文件说明</h3><h4 id="卡片头像配置"><a href="#卡片头像配置" class="headerlink" title="卡片头像配置"></a>卡片头像配置</h4><pre><code class="yaml"># 卡片头像
+head_img: /images/avatar.png      # 存于主题的source路径中
+</code></pre>
+<h4 id="卡片其他配置"><a href="#卡片其他配置" class="headerlink" title="卡片其他配置"></a>卡片其他配置</h4><pre><code class="yaml"># 第二张、第三张卡片配置
+card:
+    #第二张卡片
+  enable: true    #这个不用管，如果是false的话可能报错
+  description: [&quot;这里写描述&quot;]
+  
+  
+  #个人信息下面的账户图标
+  icon_links:
+    github:     #github
+      icon:      #
+        type: antd-icon
+        name: github
+        theme: filled
+        src:
+      link: https://github.com/Riru233
+  
+    bilibili:
+      icon:
+        type: svg   #如果ant-design图标没有的话，可以用svg样式
+        data: M3.73252 2.67094C3.33229 2.28484 3.33229 1.64373 3.73252 1.25764C4.11291 0.890684 4.71552 0.890684 5.09591 1.25764L7.21723 3.30403C7.27749 3.36218 7.32869 3.4261 7.37081 3.49407H10.5789C10.6211 3.4261 10.6723 3.36218 10.7325 3.30403L12.8538 1.25764C13.2342 0.890684 13.8368 0.890684 14.2172 1.25764C14.6175 1.64373 14.6175 2.28484 14.2172 2.67094L13.364 3.49407H14C16.2091 3.49407 18 5.28493 18 7.49407V12.9996C18 15.2087 16.2091 16.9996 14 16.9996H4C1.79086 16.9996 0 15.2087 0 12.9996V7.49406C0 5.28492 1.79086 3.49407 4 3.49407H4.58579L3.73252 2.67094ZM4 5.42343C2.89543 5.42343 2 6.31886 2 7.42343V13.0702C2 14.1748 2.89543 15.0702 4 15.0702H14C15.1046 15.0702 16 14.1748 16 13.0702V7.42343C16 6.31886 15.1046 5.42343 14 5.42343H4ZM5 9.31747C5 8.76519 5.44772 8.31747 6 8.31747C6.55228 8.31747 7 8.76519 7 9.31747V10.2115C7 10.7638 6.55228 11.2115 6 11.2115C5.44772 11.2115 5 10.7638 5 10.2115V9.31747ZM12 8.31747C11.4477 8.31747 11 8.76519 11 9.31747V10.2115C11 10.7638 11.4477 11.2115 12 11.2115C12.5523 11.2115 13 10.7638 13 10.2115V9.31747C13 8.76519 12.5523 8.31747 12 8.31747Z
+      link: https://space.bilibili.com/85509288
+  
+  #第三张卡片:友情链接
+  friend_links:
+    诸神小G&#39;s blog: https://www.zsxg.top/
+  
+</code></pre>
+<p>如果使用图片来作为背景，请使用 background-image 属性，不要使用 background 属性。</p>
+<p>并且记得不要忘记加上双引号，否则可能会出现错误</p>
+<h2 id="Particle-S配备了多种主题风格"><a href="#Particle-S配备了多种主题风格" class="headerlink" title="Particle S配备了多种主题风格"></a>Particle S配备了多种主题风格</h2><p>为了方便阅读，Particle S依旧保留了full、maiden、night三种主题</p>
+<p>其中night主题纯暗色，方便夜间阅读博客哦</p>
+<p>full主题偏蓝色，而maiden主题偏粉色，最适合♂用啦</p>
+<p>此外，你还可以更改如下3个color的stylus文件(存于主题source文件夹下的css路径内)来为你的博客定制配色哦(自定义程度直接拉满)</p>
+<pre><code>maiden-color.styl
+full-color.styl
+night-color.styl
+</code></pre>
+<h3 id="定制配色"><a href="#定制配色" class="headerlink" title="定制配色"></a>定制配色</h3><p>下面是原作的介绍</p>
+<p>本主题采用 stylus 来编写样式，并且将配色分离出来，三种主题的配置对应 3 种配色，如有需要可以直接在主题的 css 目录中对应的配色文件修改配色即可</p>
+<p>主题的 <code>source/css</code>目录下对应的 xxx-color.styl</p>
+<ul>
+<li>full 主题配色文件：full-color.styl</li>
+<li>ngiht 主题配色文件：night-color.styl</li>
+<li>maiden 主题配色文件：maiden-color.styl</li>
+</ul>
+<p>本主题会根据主题配置文件的 <code>style</code>配置项的值，在 <code>source/layout/layout.ejs</code>中引入对应的样式文件 <code>xxx-theme.styl</code>。</p>
+<p>主题的样式文件有很多，但最终都会被引入一个 theme 文件，其中 <code>particle.styl</code>文件会引入除了配色文件外的所有样式文件，而 <code>xxx-theme.styl</code>文件会引入 <code>particle.styl</code>文件和对应的 <code>xxx-color.styl</code>配色文件，从而达到切换样式的效果。</p>
+<p>切换样式的方法:</p>
+<p>点击右上角的<img src="https://pic.imgdb.cn/item/6384b7be16f2c2beb1f655d2.jpg" alt="样式切换">图标,然后弹出这个窗口</p>
+<p><img src="https://pic.imgdb.cn/item/6384c0df16f2c2beb108f732.jpg" alt="切换样式"></p>
+<p>点击右下角按钮即可一次性切换这三种样式(延续particle主题的经典),三种样式预览图如下</p>
+<p><img src="https://pic.imgdb.cn/item/6384b87f16f2c2beb1f7b41f.jpg" alt="夜间模式"><br>适合夜间阅读<br><img src="https://pic.imgdb.cn/item/6384bdbd16f2c2beb10349c0.jpg" alt="唯美模式"><br>默认样式，推荐基佬使用<br><img src="https://pic.imgdb.cn/item/6384bdd516f2c2beb1036f01.jpg" alt="全量模式"><br>商业使用</p>
+<p>在配置时，可选择自己喜欢的样式作为默认样式，主题下的<code>_config.yml</code>配置如下</p>
+<pre><code class="yaml"># 样式
+pattern:
+  default: maiden  # 默认样式，暂时只能选night、maiden、full
+  #修改窗口上主题名称的显示，想改什么名字就改什么
+  night: 夜间    
+  maiden: 唯美
+  full: 全量
+</code></pre>
+<h2 id="Particle-S升级Pjax技术，以及耳目一新的过渡动画"><a href="#Particle-S升级Pjax技术，以及耳目一新的过渡动画" class="headerlink" title="Particle S升级Pjax技术，以及耳目一新的过渡动画"></a>Particle S升级Pjax技术，以及耳目一新的过渡动画</h2><p>在过渡动画开启的时候，需要提醒访问者打开硬件加速</p>
+<p>注:由于Pjax的特性，博客在IE浏览器下会卡在启动界面(如下图),推荐使用google chrome和Edge浏览器标准模式访问，若Edge卡在启动界面，请确保IE模式是否关闭</p>
+<p><img src="https://pic.imgdb.cn/item/6384bd8016f2c2beb102e772.jpg" alt="IE打开"></p>
+<p>开关过渡动画需要在主题下的<code>_config.yml</code>设置如下内容</p>
+<pre><code class="yaml">trans:
+    enable: true  #开启过渡动画
+</code></pre>
+<h2 id="如何撰写博客？"><a href="#如何撰写博客？" class="headerlink" title="如何撰写博客？"></a>如何撰写博客？</h2><h3 id="博客文章开头格式"><a href="#博客文章开头格式" class="headerlink" title="博客文章开头格式"></a>博客文章开头格式</h3><p>在博客开头yaml模块输入</p>
+<pre><code class="yaml">bgpath: [(存于博客根目录source/imgs/mdbg路径)图片名称]    #导入头图
+excerpt: [博客帖介绍]    #撰写博客介绍
+categories:   #分类
+- [分类]
+tags:      #标签
+- [标签1]
+- [标签2]
+date: [日期，通常为YYYY/MM/dd]        #日期
+</code></pre>
+<p>以上代码给了相应的注释，其中中括号括起来的是变量，需要根据自己的需求填写</p>
+<p>比如</p>
+<pre><code class="yaml">bgpath: cis3.png    #导入头图
+excerpt: 更新了，功能更全了    #撰写博客介绍
+categories:   #分类
+- hexo
+tags:      #标签
+- CirCle S
+- Hexo
+date: 2022/11/10      #日期
+</code></pre>
+<p>归档、分类、标签页预览</p>
+<p><img src="https://pic.imgdb.cn/item/637fb7be16f2c2beb1b51bcd.jpg" alt="归档、分类、标签页预览"></p>
+<p>主页预览</p>
+<p><img src="https://pic.imgdb.cn/item/637fb7c716f2c2beb1b52343.jpg" alt="主页预览"></p>
+<p>其界面基本统一，主页最多可显示10条博客</p>
+<h3 id="给博客增加一个交互按钮"><a href="#给博客增加一个交互按钮" class="headerlink" title="给博客增加一个交互按钮"></a>给博客增加一个交互按钮</h3><pre><code class="ejs">&lt;a class=&quot;uico waves-effect waves-light&quot; href=&#39;链接&#39;&gt;
+&lt;div class=&quot;co_main&quot;&gt;主标题&lt;/div&gt;
+&lt;div class=&quot;co_sub&quot;&gt;副标题&lt;/div&gt;
+&lt;/a&gt;
+</code></pre>
+<p>交互按钮能让博客看起来互动性更高，更简洁</p>
+<h2 id="如何更好地介绍自己"><a href="#如何更好地介绍自己" class="headerlink" title="如何更好地介绍自己?"></a>如何更好地介绍自己?</h2><p>在 <code>&lt;font color=#44bbee&gt;</code>hexo的根目录 <code>&lt;/font&gt;</code>下的source目录，找到doc，新建一个index.md，或者直接新建一个doc.md，然后就可以更好地介绍自己啦</p>
+<h2 id="搜索框"><a href="#搜索框" class="headerlink" title="搜索框"></a>搜索框</h2><h3 id="必要组件安装"><a href="#必要组件安装" class="headerlink" title="必要组件安装"></a>必要组件安装</h3><p>在使用搜索框之前，需要在博客根目录命令行内输入</p>
+<pre><code class="shell">npm install --save hexo-generator-search
+npm install --save hexo-generator-searchdb
+</code></pre>
+<p>然后在 <code>&lt;font color=#44bbee&gt;</code>hexo的根目录 <code>&lt;/font&gt;</code>下的 <code>_config.yml</code>中添加</p>
+<pre><code class="yaml">search:
+  path: search.xml
+  field: post
+  content: true
+</code></pre>
+<h3 id="体验"><a href="#体验" class="headerlink" title="体验"></a>体验</h3><p><img src="https://pic.imgdb.cn/item/637fb7db16f2c2beb1b53160.jpg" alt="搜索窗口"></p>
+<p>试着在框内输入一个内容:hadoop</p>
+<p><img src="https://pic.imgdb.cn/item/637fb7e616f2c2beb1b5390f.jpg" alt="输入框"></p>
+<p>搜索框正常运行</p>
+<p>搜索框功能简单，但是在开发过程中遇到很多波折</p>
+<p>单搜索框就花费了很多天去开发，从1.0开发到现在，如今正式上线，方便查找博客</p>
+<h2 id="阅读进度"><a href="#阅读进度" class="headerlink" title="阅读进度"></a>阅读进度</h2><p>你可以在主题配置文件中找到这个</p>
+<p>将 <code>enable</code>属性改为true即可启用</p>
+<pre><code class="yaml">readpro:
+  enable: true
+</code></pre>
+<h2 id="其他页面"><a href="#其他页面" class="headerlink" title="其他页面"></a>其他页面</h2><p>Hexo预留了其他页面的空间，你可以新建markdown文件撰写你的页面</p>
+<p>只需在 <code>&lt;font color=#44bbee&gt;</code>hexo的根目录下source文件夹 <code>&lt;/font&gt;</code>内创建4个markdown文件以维持运行(需要对应菜单栏合理分配页面入口)</p>
+<p>比如about.md:</p>
+<pre><code class="yaml">---
+show: &quot;about&quot;
+---
+</code></pre>
+<p>下面给出对照表</p>
+<table>
+<thead>
+<tr>
+<th>show配置</th>
+<th>对应source下的文件</th>
+<th>生成的链接</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>“about”</td>
+<td>about.md</td>
+<td>[link]/about</td>
+<td>关于主题</td>
+</tr>
+<tr>
+<td>“categories”</td>
+<td>categories.md</td>
+<td>[link]/categories</td>
+<td>分类</td>
+</tr>
+<tr>
+<td>“tags”</td>
+<td>tags.md</td>
+<td>[link]/tags</td>
+<td>标签页</td>
+</tr>
+<tr>
+<td>“update”</td>
+<td>update.md</td>
+<td>[link]/update</td>
+<td>主题升级日志与规划</td>
+</tr>
+</tbody></table>
+<h2 id="计划完工的内容"><a href="#计划完工的内容" class="headerlink" title="计划完工的内容"></a>计划完工的内容</h2><blockquote>
+<p>列表页面将会通过markdown中的yaml块书写(待处理)</p>
+<p>一键切换主题</p>
+</blockquote>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>本文件可能存在一些不足之处，请大家积极指正哦，后续也会进行修改，让大家更容易上手</p>
+]]></content>
+      <categories>
+        <category>技术交流</category>
+      </categories>
+      <tags>
+        <tag>CirCle S</tag>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>原神私服卡池修改</title>
+    <url>/2022/11/28/%E5%8E%9F%E7%A5%9E%E7%A7%81%E6%9C%8D%E5%8D%A1%E6%B1%A0%E4%BF%AE%E6%94%B9/</url>
+    <content><![CDATA[<p>最近，很多小伙伴们都不知道如何修改某二次元游戏的卡池，甚至修改一下就出错了，于是就有了这期的教程</p>
+<h1 id="卡池大致结构"><a href="#卡池大致结构" class="headerlink" title="卡池大致结构"></a>卡池大致结构</h1><p>这款游戏卡池一般的结构是新手池、限定角色池、限定武器池、常驻池，有时候限定角色池会弄两个，现在来分析一下卡池的结构</p>
+<p>卡池文件是banners.json，位于服务端的data文件夹内</p>
+<pre><code class="json">/*为了突出重点，大部分代码用省略号省略*/
+[
+    &#123;
+        ...
+        &quot;bannerType&quot;: &quot;STANDARD&quot;,  /*常驻池*/
+        ...
+    &#125;,
+    &#123;
+        ...
+        &quot;bannerType&quot;: &quot;EVENT&quot;,  /*新手祈愿或者限定角色池*/
+        ...
+    &#125;,
+    &#123;
+        ...
+        &quot;bannerType&quot;: &quot;WEAPON&quot;,  /*武器池*/
+        ...
+    &#125;
+]
+</code></pre>
+<p>卡池结构大致如上，由于json的特性，最末尾的 <code>&#125;</code> 后面是不能加逗号的，以上结构就代表总数为3的卡池，接下来将会把其中一个卡池拆开分析</p>
+<h1 id="一个卡池内各个元素的分析"><a href="#一个卡池内各个元素的分析" class="headerlink" title="一个卡池内各个元素的分析"></a>一个卡池内各个元素的分析</h1><p>下面，来看其中的一个代码，也可以根据代码看说明</p>
+<pre><code class="json">//这里五星标为1，四星标为2
+    &#123;
+        &quot;gachaType&quot;: 301,  //200是固定的常驻池，则up池这是301。若将要多卡池就把301依次加1就行了
+        &quot;scheduleId&quot;: 903,    //卡池类型，好像没什么卵用，估计是为了自动确定概率
+        &quot;bannerType&quot;: &quot;EVENT&quot;,   //限定卡池
+        &quot;prefabPath&quot;: &quot;GachaShowPanel_A060&quot;, //封面
+        &quot;previewPrefabPath&quot;: &quot;UI_Tab_GachaShowPanel_A060&quot;,  //预览封面
+        &quot;titlePath&quot;: &quot;UI_GACHA_SHOW_PANEL_A025_TITLE&quot;,   //标题 
+        &quot;costItemId&quot;: 223,       //抽卡的耗材
+        &quot;beginTime&quot;: 0,          //开始时间
+        &quot;endTime&quot;: 1924992000,   //结束时间
+        &quot;sortId&quot;: 9998,          //暂时不确定用途，最好不改
+        &quot;maxItemType&quot;: 1,        //暂时不确定用途，好像是出金的值
+        &quot;rateUpItems1&quot;: [
+            1038       //限定五星:阿某多
+        ],
+        &quot;rateUpItems2&quot;: [
+            1032,      //四星
+            1034,
+            1045,
+            11415
+        ],
+        &quot;eventChance2&quot;: 50,   //四星歪的概率: 50%
+    &quot;eventChance1&quot;: 50    //五星歪的概率: 50%
+    &#125;,
+</code></pre>
+<p>看完上述代码，粘贴上去，估计基本的卡池就做出来了</p>
+<p>原来是用这种方法来解决的吗？太厉害了！</p>
+]]></content>
+      <categories>
+        <category>技术交流</category>
+      </categories>
+      <tags>
+        <tag>json</tag>
+        <tag>genshin</tag>
+      </tags>
+  </entry>
+</search>

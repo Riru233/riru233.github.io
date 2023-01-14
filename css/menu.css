@@ -1,0 +1,112 @@
+.slide-enter-active,
+.slide-leave-active {
+  transition: margin-top 0.3s, opacity 0.3s;
+}
+.slide-enter-from,
+.slide-leave-to {
+  margin-top: -900px;
+  opacity: 0;
+}
+#menu {
+  user-select: none;
+  z-index: 105;
+  position: fixed;
+  width: 100%;
+  line-height: 50px;
+  transition: top 0.5s ease-out;
+  background: menu-default-background;
+  box-shadow: 0px -1px 10px 0px rgba(158,158,158,0.302);
+  top: 0;
+}
+#menu .desktop-menu {
+  height: 50px;
+  margin-left: 20px;
+}
+#menu .desktop-menu .title {
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-family: default-font-family;
+  font-weight: lighter;
+  color: menu-default-font;
+}
+#menu .desktop-menu a {
+  display: inline-block;
+  font-weight: lighter;
+  padding: 0px 15px;
+  text-decoration: none;
+  color: menu-default-font;
+  transition: all 0.3s ease-out;
+}
+#menu .desktop-menu a:hover {
+  background: rgba(194,194,194,0.458);
+  border-radius: 50px;
+}
+#menu .desktop-menu a span {
+  display: inline-block;
+  position: relative;
+}
+#menu .desktop-menu a span img {
+  position: relative;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+}
+#menu .desktop-menu a span:nth-child(1) {
+  margin-right: 5px;
+}
+#menu .desktop-menu a .local-search-plugin .local-search-input-cls {
+  width: 160px;
+}
+#menu .phone-menu {
+  font-weight: lighter;
+  min-height: 50px;
+  text-align: center;
+}
+#menu .phone-menu .title {
+  color: menu-default-font;
+}
+#menu .phone-menu .items {
+  padding: 10px 0 20px;
+  z-index: 104;
+}
+#menu .phone-menu .items a {
+  color: menu-default-font;
+}
+#menu .phone-menu .items .item {
+  min-width: 200px;
+  width: 80%;
+  margin: auto;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease-out;
+}
+#menu .phone-menu .items .item:hover {
+  background: rgba(182,182,182,0.486);
+  border-radius: 20px;
+}
+#menu .phone-menu .items .item .local-search-plugin .local-search-input-cls {
+  width: auto;
+}
+.hidden-menu {
+  top: -70px !important;
+  transition: all 0.5s ease-out;
+}
+.menu-color {
+  background: menu-index-background !important;
+  box-shadow: 0px -1px 10px 0px rgba(255,255,255,0) !important;
+}
+.menu-color .false {
+  background: rgba(0,0,0,0.2);
+}
+.menu-color .true {
+  background: rgba(0,0,0,0.6) !important;
+}
+.menu-color .title,
+.menu-color a {
+  color: menu-index-font !important;
+}

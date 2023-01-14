@@ -1,0 +1,1015 @@
+
+    <!DOCTYPE html>
+    <html lang="zh-CN ">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+        <title>
+            Particle S Demo♥第3章 NumPy 数值计算基础
+        </title>
+        <meta name="author" content="Hizuna">
+        <meta name="description" content=" ">
+        <meta name="keywords" content=" ">
+        <link rel="icon" href="https://pic.imgdb.cn/item/637fada916f2c2beb1a97889.png">
+        <!--转场动画-->
+        
+            <style> 
+                #main { 
+                    animation: SlideInAnimation ease 0.3s; 
+                    transition: all 0.3s ease-in-out;
+                } 
+                #themechg {
+                    animation: ThemeAnimation ease 0.3s;
+                    transition: all 0.3s ease-in-out;
+                }
+                @keyframes SlideInAnimation { 
+                    0% { 
+                        opacity: 0;
+                        transform: translate3d(100px,0,0);
+                    } 
+                    100% { 
+                        opacity: 1;
+                        transform: translate3d(0,0,0);
+                    } 
+                }
+                @keyframes ThemeAnimation { 
+                    0% { 
+                        opacity: 0;
+                    } 
+                    100% { 
+                        opacity: 1;
+                    } 
+                }
+            </style>
+        
+        <!--aplayer全局刷新-->
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+
+        <!--jquery-->
+        <link rel="stylesheet" href="/dist/jquery.rippleria.min.css">
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script src="/dist/jquery.rippleria.min.js"></script>
+
+        <!--导入Pjax-->
+        <script data-pjax src="https://cdn.jsdelivr.net/npm/pjax/pjax.js"></script>
+
+        <!--导入lazyload-->
+        <script src="https://cdn.bootcdn.net/ajax/libs/Cuckoo/2.0.2/js/lazyload.min.js"></script>
+
+        <!--materialize-->
+        <link href="https://cdn.bootcdn.net/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+        <script data-pjax src="https://cdn.bootcdn.net/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+        <!--导入vue3-->
+        <script src="https://cdn.staticfile.org/vue/3.2.33/vue.global.prod.min.js"></script>
+    <meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Particle S Demo" type="application/atom+xml">
+</head>
+
+    <body class="scrollbar" style="transition: all 0.5s ease-in-out;">
+        <div id="themestyle">
+            <link rel="stylesheet" href="/css/full-theme.css">
+        </div>
+        <!-- 等待页面块 -->
+        
+        
+        <div id="loading" style="height: 100%; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;z-index: 1999;">
+            <span style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;font-weight: lighter;">
+                <div id="loadcontent" style="padding:50px;display:flex;opacity:1;transition:opacity 1s ease-out;">
+                    <div>
+                        <img src="https://pic.imgdb.cn/item/637fafc016f2c2beb1ab8ab8.gif" alt="loading">
+                    </div>
+                </div>
+            </span>
+            <span style="position: fixed;left: 20px;bottom: 0;font-size: 15px;">
+                <div id="loadcontent" style="padding:20px;border-radius:50%;display:flex;text-align:left;opacity:1;transition:opacity 1s ease-out;">
+                    <div>
+                        <div>
+                            <p>🙂 Tip: 加载过慢请开启缓存(浏览器默认开启)</p>
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <span style="position: fixed; right: 20px;bottom: 0;font-size: 15px;">
+                <div id="loadcontent" style="padding:20px;border-radius:50%;display:flex;text-align:right;opacity:1;transition:opacity 1s ease-out;">
+                    <div>
+                        <div id="loaduni">
+                            <p>正在火速加载中，请稍候...</p>
+                        </div>
+                    </div>
+                </div>
+            </span>
+        </div>
+
+        <!--主题切换块-->
+        <div id="themechg" style="visibility: hidden;height: 100%; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;z-index: 1999;">
+            <span style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;font-weight: lighter;">
+                <div id="loadcontent" style="font-size:30px;padding:50px;display:flex;opacity:1;transition:opacity 1s ease-out;">
+                    <div id="confont">
+                        <p>切换样式中，请稍候...</p>
+                    </div>
+                </div>
+            </span>
+        </div>
+
+
+        <!-- 主界面块 -->
+        <div id="layout">
+            
+            <transition name="into">
+                
+                <div v-show="showpage" style="display: -not-none;">
+                    <div class="loading-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div id="menushow">
+                        
+<div id="menu">
+    <div class="desktop-menu">
+        <div style="position: absolute;">
+            <!--主站-->
+            <a href="/">
+                <span class="title">
+                    Particle S Demo
+                </span>
+            </a>
+
+            <!--进入各个入口-->
+            
+            <a href="/">
+                <span>
+                    主站
+                </span>
+            </a>
+            
+            <a href="/archives">
+                <span>
+                    归档
+                </span>
+            </a>
+            
+            <a href="/categories">
+                <span>
+                    分类
+                </span>
+            </a>
+            
+            <a href="/tags">
+                <span>
+                    标签云
+                </span>
+            </a>
+            
+            <a href="/qqgroup">
+                <span>
+                    联系开fa♂人员
+                </span>
+            </a>
+            
+            <a href="/reso">
+                <span>
+                    有用の东西
+                </span>
+            </a>
+            
+            <a href="/about">
+                <span>
+                    关于
+                </span>
+            </a>
+            
+        </div>
+
+        <div style="position: absolute;right:0;padding-right: 10px;">
+            <a href="#modal1" class="modal-trigger tooltipped" data-position="bottom" data-tooltip="切换样式">
+                <div style="min-width:20px; max-width:50px; width: 10%">
+                    <i>
+                        <svg viewBox="64 64 896 896" data-icon="highlight" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                            <path d="M957.6 507.4L603.2 158.2a7.9 7.9 0 0 0-11.2 0L353.3 393.4a8.03 8.03 0 0 0-.1 11.3l.1.1 40 39.4-117.2 115.3a8.03 8.03 0 0 0-.1 11.3l.1.1 39.5 38.9-189.1 187H72.1c-4.4 0-8.1 3.6-8.1 8V860c0 4.4 3.6 8 8 8h344.9c2.1 0 4.1-.8 5.6-2.3l76.1-75.6 40.4 39.8a7.9 7.9 0 0 0 11.2 0l117.1-115.6 40.1 39.5a7.9 7.9 0 0 0 11.2 0l238.7-235.2c3.4-3 3.4-8 .3-11.2zM389.8 796.2H229.6l134.4-133 80.1 78.9-54.3 54.1zm154.8-62.1L373.2 565.2l68.6-67.6 171.4 168.9-68.6 67.6zM713.1 658L450.3 399.1 597.6 254l262.8 259-147.3 145z" />
+                        </svg>
+                    </i>
+                </div>
+            </a>
+            
+            <a href="#searchModal" class="modal-trigger tooltipped" data-position="bottom" data-tooltip="搜索">
+                <div style="min-width:20px; max-width:50px; width: 10%">
+                    <i>
+                        <svg viewBox="64 64 896 896" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0 0 11.6 0l43.6-43.5a8.2 8.2 0 0 0 0-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z" />
+                        </svg>
+                    </i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div :class="'phone-menu ' + menushow" id="phone-menu">
+        <div :class="'title'">
+            <span style="margin-right: 10px;position:absolute;left:30px;cursor: pointer;" @click="menushow=!menushow">
+                <i aria-label="icon: menu" class="anticon anticon-menu"><svg viewBox="64 64 896 896" data-icon="menu" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z"></path></svg></i>
+            </span>
+
+            <span>
+                Particle S Demo
+            </span>
+
+            <span style="position: absolute;right:0;padding-right: 70px;" class="tooltipped" data-position="bottom" data-tooltip="切换样式">
+                <span href="#modal1" class="modal-trigger">
+                    <i>
+                        <svg viewBox="64 64 896 896" data-icon="highlight" width="1em" height="1em" fill="currentColor" aria-hidden="true" class="">
+                            <path d="M957.6 507.4L603.2 158.2a7.9 7.9 0 0 0-11.2 0L353.3 393.4a8.03 8.03 0 0 0-.1 11.3l.1.1 40 39.4-117.2 115.3a8.03 8.03 0 0 0-.1 11.3l.1.1 39.5 38.9-189.1 187H72.1c-4.4 0-8.1 3.6-8.1 8V860c0 4.4 3.6 8 8 8h344.9c2.1 0 4.1-.8 5.6-2.3l76.1-75.6 40.4 39.8a7.9 7.9 0 0 0 11.2 0l117.1-115.6 40.1 39.5a7.9 7.9 0 0 0 11.2 0l238.7-235.2c3.4-3 3.4-8 .3-11.2zM389.8 796.2H229.6l134.4-133 80.1 78.9-54.3 54.1zm154.8-62.1L373.2 565.2l68.6-67.6 171.4 168.9-68.6 67.6zM713.1 658L450.3 399.1 597.6 254l262.8 259-147.3 145z" />
+                        </svg>
+                    </i>
+                </span>
+            </span>
+
+            <span style="position: absolute;right:0;padding-right: 30px;" class="tooltipped" data-position="bottom" data-tooltip="搜索">
+                <span href="#searchModal" class="modal-trigger">
+                    <i><svg viewBox="64 64 896 896" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true" class=""><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0 0 11.6 0l43.6-43.5a8.2 8.2 0 0 0 0-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path></svg></i>
+                </span>
+            </span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="menushow" style="display: none;">
+                
+                <a href="/">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">主站</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">归档</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">分类</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">标签云</div>
+                    </div>
+                </a>
+                
+                <a href="/qqgroup">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">联系开fa♂人员</div>
+                    </div>
+                </a>
+                
+                <a href="/reso">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">有用の东西</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">关于</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</div>
+                    </div>
+                    
+<!-- 搜索遮罩框，作为文件导入* -->
+<div id="searchModal" class="modal scrollbar" style="border-radius: 10px;">
+    <div class="modal-content">
+        <div class="search-header">
+            <div class="title">搜索</div>
+            <input type="search" id="searchInput" name="s" placeholder="搜索学习笔记、技术交流等内容" class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<!-- 用的同一个架构，懒得改ejs文件名了 -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <div class="title">切换样式</div>
+        <p>一个博客，没有一个多彩的主题，大概就没有了生机吧，点击下方按钮切换吧</p>
+    </div>
+    <div class="modal-footer">
+        <a id="themenight" class="modal-close waves-effect waves-white btn-flat">夜间</a>
+        <a id="thememaiden" class="modal-close waves-effect waves-white btn-flat">唯美</a>
+        <a id="themefull" class="modal-close waves-effect waves-white btn-flat">全量</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                //从博客范围中获取数据
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+                    <div id="main">
+                        
+    <link rel="stylesheet" href="/css/post-body.css">
+    <div class="article">
+        <div hoverable class="uico" style="background-image: url('/images/mdbg/');padding:0;border:0px">
+            <div class="linear" style="height:100%;width:100%;border-radius: 20px;padding:20px;">
+                <div>
+                    <h1>
+                        第3章 NumPy 数值计算基础
+                    </h1>
+                </div>
+                <div class="info">
+                    <span class="date">
+                        <i aria-label="icon: calendar" class="anticon anticon-calendar"><svg viewBox="64 64 896 896" data-icon="calendar" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"></path></svg></i>
+                        2022/11/28
+                    </span>
+
+                    
+                        <span class="category">
+                            <a href="/categories/学习笔记">
+                                <i aria-label="icon: book" class="anticon anticon-book"><svg viewBox="64 64 896 896" data-icon="book" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-260 72h96v209.9L621.5 312 572 347.4V136zm220 752H232V136h280v296.9c0 3.3 1 6.6 3 9.3a15.9 15.9 0 0 0 22.3 3.7l83.8-59.9 81.4 59.4c2.7 2 6 3.1 9.4 3.1 8.8 0 16-7.2 16-16V136h64v752z"></path></svg></i>
+                                学习笔记
+                            </a>
+                        </span>
+                        
+
+                            
+
+                                <span class="tags">
+                                    
+                                        <span class="tag">
+                                            
+                                                <a href="/tags/jupyter" style=color:#00bcd4>
+                                                        jupyter
+                                                </a>
+                                        </span>
+                                        
+                                </span>
+                                
+                </div>
+            </div>
+        </div>
+        <!--博客容器-->
+        <div class="content" v-pre>
+
+            <!--程序:目录-->
+            <div id="fancycard" class="quickcard btncard-hide" style="position: fixed;z-index: 999;">
+                 
+
+    <div id="toc" class="toc_main">
+        <strong class="sidebar-title">目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#3-1-NumPy-%E5%A4%9A%E7%BB%B4%E6%95%B0%E7%BB%84"><span class="toc-text">3.1 NumPy 多维数组</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-1%E5%88%9B%E5%BB%BA%E6%95%B0%E7%BB%84%E5%AF%B9%E8%B1%A1"><span class="toc-text">3.1.1创建数组对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%BD%BF%E7%94%A8array%E5%87%BD%E6%95%B0%E5%88%9B%E5%BB%BA%E6%95%B0%E7%BB%84%E5%AF%B9%E8%B1%A1"><span class="toc-text">1.使用array函数创建数组对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%93%E9%97%A8%E5%88%9B%E5%BB%BA%E6%95%B0%E7%BB%84%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-text">2.专门创建数组的函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-ndarray%E5%AF%B9%E8%B1%A1%E5%B1%9E%E6%80%A7%E5%92%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2"><span class="toc-text">3.1.2 ndarray对象属性和数据转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-3-%E7%94%9F%E6%88%90%E9%9A%8F%E6%9C%BA%E6%95%B0"><span class="toc-text">3.1.3 生成随机数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-4-%E6%95%B0%E7%BB%84%E5%8F%98%E6%8D%A2"><span class="toc-text">3.1.4 数组变换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%95%B0%E7%BB%84%E9%87%8D%E5%A1%91"><span class="toc-text">1.数组重塑</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+            </div>
+
+            
+                <div class="uico" style="background-color: #d7a1c1;">
+                    <div class="co_main" style="color:#fff">前言</div>
+                    <div class="co_sub" style="color:#fff">
+                        本帖由Jupyter生成。。。诶嘿，怎么我学习的笔记传出去了？
+                    </div>
+                </div>
+                
+
+                    <h1 id="3-1-NumPy-多维数组"><a href="#3-1-NumPy-多维数组" class="headerlink" title="3.1 NumPy 多维数组"></a>3.1 NumPy 多维数组</h1><h2 id="3-1-1创建数组对象"><a href="#3-1-1创建数组对象" class="headerlink" title="3.1.1创建数组对象"></a>3.1.1创建数组对象</h2><h3 id="1-使用array函数创建数组对象"><a href="#1-使用array函数创建数组对象" class="headerlink" title="1.使用array函数创建数组对象"></a>1.使用array函数创建数组对象</h3><p>array函数的格式</p>
+<pre><code class="python">np.array(&lt;想要创建的数组&gt;,&lt;数据类型&gt;,&lt;接收int，指定数组应该具有的最小维数&gt;)
+</code></pre>
+<pre><code class="python">import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt     #Notebook导入库
+</code></pre>
+<p><font style="font-weight: 300">(1)创建ndarray数组</font></p>
+<pre><code class="python">#指定列表
+list_data = [1,3,5,7]
+w1 = np.array(list_data)
+print(&quot;【输出】通过NumPy输出的list为:\n&quot;,w1)
+</code></pre>
+<pre><code>【输出】通过NumPy输出的list为:
+ [1 3 5 7]
+</code></pre>
+<pre><code class="python">#指定元组
+tup_data = (1,3,5,7)
+w2 = np.array(tup_data)
+print(&quot;【输出】通过NumPy输出的tuple为:\n&quot;,w2)
+</code></pre>
+<pre><code>【输出】通过NumPy输出的tuple为:
+ [1 3 5 7]
+</code></pre>
+<pre><code class="python">#指定多维数组
+mul_data = [[1,3,5,7],[2,4,6,9]]
+w3 = np.array(mul_data)
+print(&quot;【输出】通过NumPy输出的多维数组为:\n&quot;,w3)
+</code></pre>
+<pre><code>【输出】通过NumPy输出的多维数组为:
+ [[1 3 5 7]
+ [2 4 6 9]]
+</code></pre>
+<p><font style="font-weight: 300">(2)在array函数中指定dtype</font></p>
+<pre><code class="python">list_data = [1,3,5,7]
+w1 = np.array(list_data)
+print(&quot;【输出】默认的dtype为\n&quot;,w1.dtype)
+w1 = np.array(list_data,dtype=&#39;int64&#39;)
+print(&quot;【输出】输出list的dtype为\n&quot;,w1.dtype)
+w1 = np.array(list_data,dtype=&#39;float64&#39;)
+print(&quot;【输出】输出list的dtype为\n&quot;,w1.dtype)
+</code></pre>
+<pre><code>【输出】默认的dtype为
+ int32
+【输出】输出list的dtype为
+ int64
+【输出】输出list的dtype为
+ float64
+</code></pre>
+<h3 id="2-专门创建数组的函数"><a href="#2-专门创建数组的函数" class="headerlink" title="2.专门创建数组的函数"></a>2.专门创建数组的函数</h3><p>(1)arange函数(按照范围与间隔创建数组)</p>
+<p>格式</p>
+<pre><code class="python">np.arange(&lt;起始值&gt;,&lt;终值&gt;,&lt;步长范围&gt;)
+</code></pre>
+<pre><code class="python">#默认步长为1
+wa = np.arange(10)
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [0 1 2 3 4 5 6 7 8 9]
+</code></pre>
+<pre><code class="python">#步长参数参数demo
+wa = np.arange(0,10,2)     #范围:从0到10，起始值与终值之间左闭右开取整，设定间隔数为2
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [0 2 4 6 8]
+</code></pre>
+<pre><code class="python">#同时还可以按照书本上的来
+wa = np.arange(0,1,0.2)      #范围:从0到1,起始值与终值之间左闭右开取整，设定间隔数为0.2
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [0.  0.2 0.4 0.6 0.8]
+</code></pre>
+<p>(2)linspace函数(按照范围与元素个数创建数组)</p>
+<p>格式</p>
+<pre><code class="python">np.linspace(&lt;起始值&gt;,&lt;终值&gt;,&lt;元素个数&gt;)
+</code></pre>
+<pre><code class="python">#演示
+wa = np.linspace(0,10,9)    #范围:从0到10,起始值与终值之间左闭右开取整，设定间隔数为20
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [ 0.    1.25  2.5   3.75  5.    6.25  7.5   8.75 10.  ]
+</code></pre>
+<p>(3)logspace函数(按照指数范围与元素个数创建等比数列，指数默认为10的指数)</p>
+<p>格式</p>
+<pre><code class="python">np.logspace(&lt;起始指数&gt;,&lt;终指数&gt;,&lt;元素个数&gt;)
+</code></pre>
+<pre><code class="python">#演示
+wa = np.logspace(0,2,3)
+print(&quot;【输出】&quot;,wa)
+wa = np.logspace(0,3,4)
+print(&quot;【输出】&quot;,wa)
+</code></pre>
+<pre><code>【输出】 [  1.  10. 100.]
+【输出】 [   1.   10.  100. 1000.]
+</code></pre>
+<p>(4)zeros函数(创建一个全是0的矩阵)</p>
+<p>格式</p>
+<pre><code class="python">np.zeros([&lt;行&gt;,&lt;列&gt;])
+np.zeros(&lt;列&gt;)
+</code></pre>
+<pre><code class="python">#演示
+print(&quot;【输出】&quot;,np.zeros(4))    #创建1行4列的全零矩阵
+</code></pre>
+<pre><code>【输出】 [0. 0. 0. 0.]
+</code></pre>
+<pre><code class="python">print(&quot;【输出】&quot;,np.zeros([4,4]))    #创建4行4列的全零矩阵
+</code></pre>
+<pre><code>【输出】 [[0. 0. 0. 0.]
+ [0. 0. 0. 0.]
+ [0. 0. 0. 0.]
+ [0. 0. 0. 0.]]
+</code></pre>
+<pre><code class="python">print(&quot;【输出】&quot;,np.zeros([3,2]))    #创建3行2列的全零矩阵
+</code></pre>
+<pre><code>【输出】 [[0. 0.]
+ [0. 0.]
+ [0. 0.]]
+</code></pre>
+<p>(5)ones函数</p>
+<p>原理与zeros函数差不多，只不过是创建全1数组</p>
+<p>(6)diag函数(创建对角矩阵)</p>
+<p>格式</p>
+<pre><code class="python">np.diag(&lt;数组&gt;)
+</code></pre>
+<pre><code class="python">#Demo
+print(&quot;【输出】&quot;,np.diag([1,2,3,4,5,6]))    #创建1至6的对角矩阵
+</code></pre>
+<pre><code>【输出】 [[1 0 0 0 0 0]
+ [0 2 0 0 0 0]
+ [0 0 3 0 0 0]
+ [0 0 0 4 0 0]
+ [0 0 0 0 5 0]
+ [0 0 0 0 0 6]]
+</code></pre>
+<h3 id="3-1-2-ndarray对象属性和数据转换"><a href="#3-1-2-ndarray对象属性和数据转换" class="headerlink" title="3.1.2 ndarray对象属性和数据转换"></a>3.1.2 ndarray对象属性和数据转换</h3><p><font style="color: red">ndarray对象属性和说明</font></p>
+<table>
+<thead>
+<tr>
+<th align="center">属性</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ndim</td>
+<td align="center">秩，即数据轴的个数</td>
+</tr>
+<tr>
+<td align="center">shape</td>
+<td align="center">数组的维度</td>
+</tr>
+<tr>
+<td align="center">size</td>
+<td align="center">数组元素个数</td>
+</tr>
+<tr>
+<td align="center">dtype</td>
+<td align="center">数据类型</td>
+</tr>
+<tr>
+<td align="center">itemsize</td>
+<td align="center">数组中每个元素字节大小</td>
+</tr>
+</tbody></table>
+<pre><code class="python">#查看数组的属性
+wa = np.array([[1,2,3,4],[4,5,6,7],[7,8,9,10]],dtype=&quot;int64&quot;)
+print(&quot;【输出】秩为:&quot;,wa.ndim)
+print(&quot;【输出】数据形状为:&quot;,wa.shape)    #共3个维度，每个维度有4个元素
+print(&quot;【输出】元素总个数为:&quot;,wa.size)    #共有多少元素，包括维度内
+print(&quot;【输出】数据类型为:&quot;,wa.dtype)
+print(&quot;【输出】数组内每个元素的字节:&quot;,wa.itemsize)
+</code></pre>
+<pre><code>【输出】秩为: 2
+【输出】数据形状为: (3, 4)
+【输出】元素总个数为: 12
+【输出】数据类型为: int64
+【输出】数组内每个元素的字节: 8
+</code></pre>
+<pre><code class="python">#设置数组的属性
+wa.shape=4,3
+print(&quot;【输出】修改属性后的数组:&quot;,wa)        #相当于行列转换
+</code></pre>
+<pre><code>【输出】修改属性后的数组: [[ 1  2  3]
+ [ 4  4  5]
+ [ 6  7  7]
+ [ 8  9 10]]
+</code></pre>
+<pre><code class="python">#转换数组的类型
+print(&quot;【输出】&quot;,wa.dtype)
+wa=wa.astype(np.float64)      #转换核心
+print(&quot;【输出】&quot;,wa.dtype)
+</code></pre>
+<pre><code>【输出】 int64
+【输出】 float64
+</code></pre>
+<h3 id="3-1-3-生成随机数"><a href="#3-1-3-生成随机数" class="headerlink" title="3.1.3 生成随机数"></a>3.1.3 生成随机数</h3><p>格式</p>
+<pre><code class="python">#整数
+np.random.randint(&lt;最小值&gt;,&lt;最大值&gt;,size=(&lt;维度&gt;,&lt;每个维度内的个数&gt;))
+#[0,1]随机小数
+np.random.randint(&lt;维度&gt;,&lt;每个维度内的个数&gt;)
+</code></pre>
+<pre><code class="python">#生成随机整数
+print(&quot;【输出】&quot;,np.random.randint(100,200,size=(2,5)))
+</code></pre>
+<pre><code>【输出】 [[163 172 183 141 198]
+ [158 169 190 101 154]]
+</code></pre>
+<p>持续更新中…</p>
+<p>敬请期待</p>
+<pre><code class="python">#生成[0,1]的随机小数
+print(&quot;5列&quot;)
+print(&quot;【输出】&quot;,np.random.rand(5))     #1行5列数据
+print(&quot;4行2列&quot;)
+print(&quot;【输出】&quot;,np.random.rand(4,2))    #4行2列数据
+</code></pre>
+<pre><code>5列
+【输出】 [0.43027083 0.89884511 0.47557747 0.35991609 0.50379094]
+4行2列
+【输出】 [[0.39204969 0.10542467]
+ [0.28088711 0.08759401]
+ [0.50841722 0.46531397]
+ [0.11683341 0.7445252 ]]
+</code></pre>
+<p>NumPy生成随机数可以类比random模块，优点是无需额外导入random模块</p>
+<p>random模块常用的随机数生成的函数(需要积累)</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">seed</td>
+<td align="center">确定随机数生成器的种子</td>
+</tr>
+<tr>
+<td align="center">permutation</td>
+<td align="center">返回一个序列的随机排列或者返回一个随机排列的范围</td>
+</tr>
+<tr>
+<td align="center">shuffle</td>
+<td align="center">对一个序列进行随机排序</td>
+</tr>
+<tr>
+<td align="center">binomial</td>
+<td align="center">产生二项分布的随机数</td>
+</tr>
+<tr>
+<td align="center">normal</td>
+<td align="center">产生正态分布的随机数</td>
+</tr>
+<tr>
+<td align="center">beta</td>
+<td align="center">产生β分布的随机数</td>
+</tr>
+<tr>
+<td align="center">chisquare</td>
+<td align="center">产生卡方分布的随机数</td>
+</tr>
+<tr>
+<td align="center">gamma</td>
+<td align="center">产生γ分布的随机数</td>
+</tr>
+<tr>
+<td align="center">uniform</td>
+<td align="center">产生在[0,1)中均匀分布的随机数</td>
+</tr>
+</tbody></table>
+<h2 id="3-1-4-数组变换"><a href="#3-1-4-数组变换" class="headerlink" title="3.1.4 数组变换"></a>3.1.4 数组变换</h2><h3 id="1-数组重塑"><a href="#1-数组重塑" class="headerlink" title="1.数组重塑"></a>1.数组重塑</h3><pre><code class="python">
+</code></pre>
+
+        </div>
+        <!--程序:阅读进度-->
+        
+
+                <!--评论区必备插件-->
+                
+                    <link rel="stylesheet" href="https://cdn.staticfile.org/waline/2.9.1/waline.min.css" />
+                    <div id="comment">
+                        <div id="waline-container"></div>
+                    </div>
+                    
+    </div>
+                         
+<footer id="footer">
+    <div class="footer-wrap" style="z-index: 1;">
+        <div></div>
+        <div><a target="_blank" rel="noopener" href="https://riru233.github.io/">Particle S主题</a>基于</div>
+        <div><a target="_blank" rel="noopener" href="https://hexo.io/">Hexo引擎</a> 与 <a target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle主题</a> 深度定制</div>
+        <div>
+            Copyright 2017 - 2023 Particle S Demo @ Hizuna
+        </div>
+        
+    </div>
+
+</footer>
+                    </div>
+                </div>
+                
+            </transition>
+            
+        </div>
+
+        <!-- 功能按钮块 -->
+        <div id="layout2" style="transition: all 9s;">
+            <!--手机端按钮支持-->
+<div id="quickcard">
+
+    <!--按钮实现-->
+    <a id="btnshow" class="float-button">
+        <svg viewBox="64 64 896 896" data-icon="arrow-left" width="2em" height="2em" fill="#ff237b" aria-hidden="true" focusable="false">
+            <path d="M464 144H160c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V160c0-8.8-7.2-16-16-16zm-52 268H212V212h200v200zm452-268H560c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V160c0-8.8-7.2-16-16-16zm-52 268H612V212h200v200zM464 544H160c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V560c0-8.8-7.2-16-16-16zm-52 268H212V612h200v200zm452-268H560c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V560c0-8.8-7.2-16-16-16zm-52 268H612V612h200v200z"></path>
+        </svg>
+    </a>
+
+    <!--按钮点击事件-->
+    <script>
+        document.querySelector("#btnshow").onclick = function (e) {   //展示
+            window.event ? window.event.cancelBubble = true : e.stopPropagation();
+            document.querySelector("#fancycard").className = 'quickcard btncard-show';
+        };
+
+        document.onclick = function (e) {                           //隐藏
+            var e = e || window.event; //浏览器兼容性 
+            var elem = e.target || e.srcElement;
+            console.log(elem.getAttribute('class'))
+            while (elem) { //循环判断至跟节点，防止点击的是div#test子元素 
+                if (elem.id && elem.id == 'fancycard') {
+                    return;
+                }
+                elem = elem.parentNode;
+            }
+            document.querySelector("#fancycard").className = 'quickcard btncard-hide';
+        }
+    </script>
+</div>
+            
+<!--aplayer支持-->
+
+
+        </div>
+
+        <!-- 加插件 -->
+        <script>
+    const App = Vue.createApp({
+        data() {
+            return {
+                showpage: false,
+                menushow: false,
+                cardtop: 100,
+                barlocal: 0,
+            };
+        },
+        created() {
+            let that = this;
+            window.addEventListener("load", () => {
+                that.showpage = true;
+                document.getElementById("loading").style.opacity = 0;
+                document.getElementById("loading").style.visibility = "hidden";
+            });
+        },
+        mounted() {
+            if (document.getElementById("home-head"))
+                document.getElementById("menu").className += " menu-color";
+            window.addEventListener("scroll", this.handleScroll, true);
+            let codes = document.getElementsByTagName("pre");
+            let copying = false;
+            for (let code of codes) {
+                const lang =
+                    code?.firstChild.className.split(/\s+/).filter(x => {
+                        return x != "sourceCode";
+                    })[0] || "text";
+            }
+        },
+        methods: {
+            home_click() {
+                window.scrollTo({
+                    top: window.innerHeight,
+                    behavior: "smooth",
+                });
+            },
+            handleScroll() {
+                let newlocal = document.documentElement.scrollTop;
+                let menu = document.getElementById("menu");
+                let wrap = document.getElementById("home-posts-wrap");
+                let footer = document.getElementById("footer");
+                let that = this;
+                if (this.barlocal < newlocal) {
+                    menu.className = "hidden-menu";
+                    that.menushow = false;
+                } else menu.className = "show-menu";
+                if (wrap) {
+                    if (newlocal <= window.innerHeight - 100) menu.className += " menu-color";
+                    if (newlocal <= 400) {
+                        wrap.style.top = -newlocal / 5 + "px";
+                    } else if (wrap.style.top != "-80px" || footer.style.top != "70px") {
+                        wrap.style.top = "-70px";
+                    }
+                }
+                this.barlocal = newlocal;
+            },
+        },
+    });
+    App.mount("#layout");
+</script>
+
+
+<!--评论区-->
+
+    <script src="https://cdn.staticfile.org/waline/2.9.1/waline.min.js"></script>
+    <script>
+        Waline.init({
+            el: '#waline-container',
+            serverURL: "https://waline-comment-p91g7g1ok-riru233.vercel.app",
+            commentCount: true,
+            pageview: false,
+            emoji: "https://unpkg.com/@waline/emojis@1.0.1/weibo,https://unpkg.com/@waline/emojis@1.0.1/alus,https://unpkg.com/@waline/emojis@1.0.1/bilibili,https://unpkg.com/@waline/emojis@1.0.1/qq,https://unpkg.com/@waline/emojis@1.0.1/tieba,https://unpkg.com/@waline/emojis@1.0.1/tw-emoji".split(','),
+            meta: "nick,mail,link".split(','),
+            requiredMeta: "nick".split(','),
+            lang: "zh-CN",
+            wordLimit: 0,
+            pageSize: "10",
+            login: "enable",
+            locale: {}
+        });
+    </script>
+    
+<!-- 浏览进度功能实现 -->
+<script data-pjax>
+document.addEventListener('DOMContentLoaded', function () {
+    var winHeight = window.innerHeight,
+        docHeight = document.querySelector.scrollHeight,
+        progressBar = document.getElementById('insert');   //选定进度条
+    progressBar.max = docHeight - winHeight;
+    progressBar.value = window.scrollY;
+
+    document.addEventListener('scroll', function () {
+        progressBar.max = document.documentElement.scrollHeight - window.innerHeight;
+        progressBar.value = window.scrollY;
+        var insertDiv = document.getElementById("insert");
+        progress = (progressBar.value / progressBar.max) * 100 + 1 >> 0;
+        insertDiv.innerHTML = progress + "%";
+    });
+});
+</script>
+
+
+<!-- Materialize选项打开 -->
+<script>
+    $(document).ready(function(){
+        $('.tooltipped').tooltip();
+    });
+
+    $('.dropdown-trigger').dropdown();
+</script>
+
+        <script src="/js/matery.js"></script>
+        
+        <script data-pjax src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+        <script data-pjax src="/js/particle.js"></script>
+        
+        <!-- Pjax内核 -->
+        <script>
+            /* Pjax加载 */
+                var pjax = new Pjax({
+                // 这里填写页面中改变的部分（和 CSS 选择器用法一样）
+                    selectors: ["head title", "#main"],
+                });
+            /* Pjax重载js文件 */
+                $("script[data-pjax], .pjax-reload script").each(function () {
+                    $(this).parent().append($(this).remove());
+                });
+            /* pjax加载时的进度条 */
+                var loadingBar = document.querySelector(".loading-bar");
+                var progress = document.querySelector(".loading-bar .progress");
+                var timer = null;
+
+                // Pjax 开始时执行的函数
+                document.addEventListener("pjax:send", function () {
+                // 进度条默认已经加载 20%
+                var loadingBarWidth = 20;
+                // 进度条的最大增加宽度
+                var MAX_LOADING_WIDTH = 95;
+
+                // 显示进度条
+                loadingBar.classList.add("loading");
+                // 初始化进度条的宽度
+                progress.style.width = loadingBarWidth + "%";
+
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    // 进度条的增加速度（可以改为一个随机值，显得更加真实）
+                    loadingBarWidth += 3;
+
+                    // 当进度条到达 95% 后停止增加
+                    if (loadingBarWidth > MAX_LOADING_WIDTH) {
+                    loadingBarWidth = MAX_LOADING_WIDTH;
+                    }
+
+                    progress.style.width = loadingBarWidth + "%";
+                }, 500);
+                });
+
+                // Pjax 完成之后执行的函数
+                document.addEventListener("pjax:complete", function () {
+                clearInterval(timer);
+                progress.style.width = "100%";
+                loadingBar.classList.remove("loading");
+
+                setTimeout(function () {
+                    progress.style.width = 0;
+                }, 400);
+                });
+        </script>
+        <!-- 主题切换模块 -->
+        <script>
+            //主题显示
+            //定义显示函数
+            function displaynone() {
+                document.querySelector("#confont").setAttribute("style", "");
+                document.querySelector("#layout").setAttribute("style", "display: none");
+                document.querySelector("#layout2").setAttribute("style", "display: none");
+                document.querySelector("#themechg").setAttribute("style", "height: 100%; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;z-index: 1999;");
+            };
+            function displayreturn() {
+                setTimeout(function () {
+                    document.querySelector("#confont").setAttribute("style", "visibility: hidden");
+                    document.querySelector("#layout").setAttribute("style", "");
+                    document.querySelector("#layout2").setAttribute("style", "");
+                    document.querySelector("#themechg").setAttribute("style", "visibility: hidden");
+                }, 1500)
+            };
+                    
+            //调用函数
+            document.querySelector("#thememaiden").onclick = function (e) {   //展示
+                displaynone();
+                document.querySelector("#themestyle").innerHTML = "<link rel='stylesheet' href='/css/maiden-theme.css'>";
+                displayreturn();
+            };
+            document.querySelector("#themenight").onclick = function (e) {   //展示
+                displaynone();
+                document.querySelector("#themestyle").innerHTML = "<link rel='stylesheet' href='/css/night-theme.css'>";
+                displayreturn();
+            };
+            document.querySelector("#themefull").onclick = function (e) {   //展示
+                displaynone();
+                document.querySelector("#themestyle").innerHTML = "<link rel='stylesheet' href='/css/full-theme.css'>";
+                displayreturn();
+            };
+        </script>
+
+    <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/z16.model.json"},"display":{"superSample":1,"width":200,"height":400,"position":"left","hOffset":400,"vOffset":-60},"mobile":{"show":false}});</script></body>
+</html>

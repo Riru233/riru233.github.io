@@ -1,0 +1,36 @@
+.categories-tags {
+  position: relative;
+  top: 100px;
+  margin: auto;
+  text-align: left;
+}
+.categories-tags .all-s {
+  text-align: left;
+  max-width: 900px;
+  width: 90%;
+  margin: auto;
+}
+.categories-tags .all-s span {
+  display: inline-block;
+}
+.categories-tags .all-s span a {
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.5s;
+  background: #3d3d3d;
+}
+.categories-tags .all-s span a:hover {
+  background: #fff !important;
+  color: label-font;
+}
+.categories-tags .all-s span a:hover .icon {
+  color: label-font;
+}
+.categories-tags .all-s span .icon {
+  margin-left: 0;
+  margin-right: 10px;
+  color: #fff;
+}
+.categories-tags #archives {
+  top: 60px;
+}

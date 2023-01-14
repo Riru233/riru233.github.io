@@ -1,0 +1,877 @@
+
+    <!DOCTYPE html>
+    <html lang="zh-CN ">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+        <title>
+            Particle S Demo♥关于使用Maven+Hadoop Client API对集群进行操作的说明
+        </title>
+        <meta name="author" content="Hizuna">
+        <meta name="description" content=" ">
+        <meta name="keywords" content=" ">
+        <link rel="icon" href="https://pic.imgdb.cn/item/637fada916f2c2beb1a97889.png">
+        <!--转场动画-->
+        
+            <style> 
+                #main { 
+                    animation: SlideInAnimation ease 0.3s; 
+                    transition: all 0.3s ease-in-out;
+                } 
+                #themechg {
+                    animation: ThemeAnimation ease 0.3s;
+                    transition: all 0.3s ease-in-out;
+                }
+                @keyframes SlideInAnimation { 
+                    0% { 
+                        opacity: 0;
+                        transform: translate3d(100px,0,0);
+                    } 
+                    100% { 
+                        opacity: 1;
+                        transform: translate3d(0,0,0);
+                    } 
+                }
+                @keyframes ThemeAnimation { 
+                    0% { 
+                        opacity: 0;
+                    } 
+                    100% { 
+                        opacity: 1;
+                    } 
+                }
+            </style>
+        
+        <!--aplayer全局刷新-->
+        <link rel="stylesheet" href="/libs/aplayer/APlayer.min.css">
+
+        <!--jquery-->
+        <link rel="stylesheet" href="/dist/jquery.rippleria.min.css">
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script src="/dist/jquery.rippleria.min.js"></script>
+
+        <!--导入Pjax-->
+        <script data-pjax src="https://cdn.jsdelivr.net/npm/pjax/pjax.js"></script>
+
+        <!--导入lazyload-->
+        <script src="https://cdn.bootcdn.net/ajax/libs/Cuckoo/2.0.2/js/lazyload.min.js"></script>
+
+        <!--materialize-->
+        <link href="https://cdn.bootcdn.net/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+        <script data-pjax src="https://cdn.bootcdn.net/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+        <!--导入vue3-->
+        <script src="https://cdn.staticfile.org/vue/3.2.33/vue.global.prod.min.js"></script>
+    <meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Particle S Demo" type="application/atom+xml">
+</head>
+
+    <body class="scrollbar" style="transition: all 0.5s ease-in-out;">
+        <div id="themestyle">
+            <link rel="stylesheet" href="/css/full-theme.css">
+        </div>
+        <!-- 等待页面块 -->
+        
+        
+        <div id="loading" style="height: 100%; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;z-index: 1999;">
+            <span style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;font-weight: lighter;">
+                <div id="loadcontent" style="padding:50px;display:flex;opacity:1;transition:opacity 1s ease-out;">
+                    <div>
+                        <img src="https://pic.imgdb.cn/item/637fafc016f2c2beb1ab8ab8.gif" alt="loading">
+                    </div>
+                </div>
+            </span>
+            <span style="position: fixed;left: 20px;bottom: 0;font-size: 15px;">
+                <div id="loadcontent" style="padding:20px;border-radius:50%;display:flex;text-align:left;opacity:1;transition:opacity 1s ease-out;">
+                    <div>
+                        <div>
+                            <p>🙂 Tip: 为了更流畅地体验本站，请打开硬件加速</p>
+                        </div>
+                    </div>
+                </div>
+            </span>
+            <span style="position: fixed; right: 20px;bottom: 0;font-size: 15px;">
+                <div id="loadcontent" style="padding:20px;border-radius:50%;display:flex;text-align:right;opacity:1;transition:opacity 1s ease-out;">
+                    <div>
+                        <div id="loaduni">
+                            <p>正在火速加载中，请稍候...</p>
+                        </div>
+                    </div>
+                </div>
+            </span>
+        </div>
+
+        <!--主题切换块-->
+        <div id="themechg" style="visibility: hidden;height: 100%; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;z-index: 1999;">
+            <span style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;font-weight: lighter;">
+                <div id="loadcontent" style="font-size:30px;padding:50px;display:flex;opacity:1;transition:opacity 1s ease-out;">
+                    <div id="confont">
+                        <p>切换样式中，请稍候...</p>
+                    </div>
+                </div>
+            </span>
+        </div>
+
+
+        <!-- 主界面块 -->
+        <div id="layout">
+            
+            <transition name="into">
+                
+                <div v-show="showpage" style="display: -not-none;">
+                    <div class="loading-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div id="menushow">
+                        
+<div id="menu">
+    <div class="desktop-menu">
+        <div style="position: absolute;">
+            <!--主站-->
+            <a href="/">
+                <span class="title">
+                    Particle S Demo
+                </span>
+            </a>
+
+            <!--进入各个入口-->
+            
+            <a href="/">
+                <span>
+                    主站
+                </span>
+            </a>
+            
+            <a href="/archives">
+                <span>
+                    归档
+                </span>
+            </a>
+            
+            <a href="/categories">
+                <span>
+                    分类
+                </span>
+            </a>
+            
+            <a href="/tags">
+                <span>
+                    标签云
+                </span>
+            </a>
+            
+            <a href="/qqgroup">
+                <span>
+                    联系开fa♂人员
+                </span>
+            </a>
+            
+            <a href="/reso">
+                <span>
+                    有用の东西
+                </span>
+            </a>
+            
+            <a href="/about">
+                <span>
+                    关于
+                </span>
+            </a>
+            
+        </div>
+
+        <div style="position: absolute;right:0;padding-right: 10px;">
+            <a href="#modal1" class="modal-trigger tooltipped" data-position="bottom" data-tooltip="切换样式">
+                <div style="min-width:20px; max-width:50px; width: 10%">
+                    <i>
+                        <svg viewBox="64 64 896 896" data-icon="highlight" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                            <path d="M957.6 507.4L603.2 158.2a7.9 7.9 0 0 0-11.2 0L353.3 393.4a8.03 8.03 0 0 0-.1 11.3l.1.1 40 39.4-117.2 115.3a8.03 8.03 0 0 0-.1 11.3l.1.1 39.5 38.9-189.1 187H72.1c-4.4 0-8.1 3.6-8.1 8V860c0 4.4 3.6 8 8 8h344.9c2.1 0 4.1-.8 5.6-2.3l76.1-75.6 40.4 39.8a7.9 7.9 0 0 0 11.2 0l117.1-115.6 40.1 39.5a7.9 7.9 0 0 0 11.2 0l238.7-235.2c3.4-3 3.4-8 .3-11.2zM389.8 796.2H229.6l134.4-133 80.1 78.9-54.3 54.1zm154.8-62.1L373.2 565.2l68.6-67.6 171.4 168.9-68.6 67.6zM713.1 658L450.3 399.1 597.6 254l262.8 259-147.3 145z" />
+                        </svg>
+                    </i>
+                </div>
+            </a>
+            
+            <a href="#searchModal" class="modal-trigger tooltipped" data-position="bottom" data-tooltip="搜索">
+                <div style="min-width:20px; max-width:50px; width: 10%">
+                    <i>
+                        <svg viewBox="64 64 896 896" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0 0 11.6 0l43.6-43.5a8.2 8.2 0 0 0 0-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z" />
+                        </svg>
+                    </i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div :class="'phone-menu ' + menushow" id="phone-menu">
+        <div :class="'title'">
+            <span style="margin-right: 10px;position:absolute;left:30px;cursor: pointer;" @click="menushow=!menushow">
+                <i aria-label="icon: menu" class="anticon anticon-menu"><svg viewBox="64 64 896 896" data-icon="menu" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z"></path></svg></i>
+            </span>
+
+            <span>
+                Particle S Demo
+            </span>
+
+            <span style="position: absolute;right:0;padding-right: 70px;" class="tooltipped" data-position="bottom" data-tooltip="切换样式">
+                <span href="#modal1" class="modal-trigger">
+                    <i>
+                        <svg viewBox="64 64 896 896" data-icon="highlight" width="1em" height="1em" fill="currentColor" aria-hidden="true" class="">
+                            <path d="M957.6 507.4L603.2 158.2a7.9 7.9 0 0 0-11.2 0L353.3 393.4a8.03 8.03 0 0 0-.1 11.3l.1.1 40 39.4-117.2 115.3a8.03 8.03 0 0 0-.1 11.3l.1.1 39.5 38.9-189.1 187H72.1c-4.4 0-8.1 3.6-8.1 8V860c0 4.4 3.6 8 8 8h344.9c2.1 0 4.1-.8 5.6-2.3l76.1-75.6 40.4 39.8a7.9 7.9 0 0 0 11.2 0l117.1-115.6 40.1 39.5a7.9 7.9 0 0 0 11.2 0l238.7-235.2c3.4-3 3.4-8 .3-11.2zM389.8 796.2H229.6l134.4-133 80.1 78.9-54.3 54.1zm154.8-62.1L373.2 565.2l68.6-67.6 171.4 168.9-68.6 67.6zM713.1 658L450.3 399.1 597.6 254l262.8 259-147.3 145z" />
+                        </svg>
+                    </i>
+                </span>
+            </span>
+
+            <span style="position: absolute;right:0;padding-right: 30px;" class="tooltipped" data-position="bottom" data-tooltip="搜索">
+                <span href="#searchModal" class="modal-trigger">
+                    <i><svg viewBox="64 64 896 896" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true" class=""><path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0 0 11.6 0l43.6-43.5a8.2 8.2 0 0 0 0-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path></svg></i>
+                </span>
+            </span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="menushow" style="display: none;">
+                
+                <a href="/">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">主站</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">归档</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">分类</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">标签云</div>
+                    </div>
+                </a>
+                
+                <a href="/qqgroup">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">联系开fa♂人员</div>
+                    </div>
+                </a>
+                
+                <a href="/reso">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">有用の东西</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item" @click="menushow=!menushow">
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">关于</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </div>
+</div>
+                    </div>
+                    
+<!-- 搜索遮罩框，作为文件导入* -->
+<div id="searchModal" class="modal scrollbar" style="border-radius: 10px;">
+    <div class="modal-content">
+        <div class="search-header">
+            <div class="title">搜索</div>
+            <input type="search" id="searchInput" name="s" placeholder="搜索学习笔记、技术交流等内容" class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<!-- 用的同一个架构，懒得改ejs文件名了 -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <div class="title">切换样式</div>
+        <p>一个博客，没有一个多彩的主题，大概就没有了生机吧，点击下方按钮切换吧</p>
+    </div>
+    <div class="modal-footer">
+        <a id="themenight" class="modal-close waves-effect waves-white btn-flat">夜间</a>
+        <a id="thememaiden" class="modal-close waves-effect waves-white btn-flat">唯美</a>
+        <a id="themefull" class="modal-close waves-effect waves-white btn-flat">全量</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                //从博客范围中获取数据
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+                    <div id="main">
+                        
+    <link rel="stylesheet" href="/css/post-body.css">
+    <div class="article">
+        <div hoverable class="uico" style="background-image: url('/images/mdbg/https://pic.imgdb.cn/item/637fb35016f2c2beb1b0f046.png');padding:0;border:0px">
+            <div class="linear" style="height:100%;width:100%;border-radius: 20px;padding:20px;">
+                <div>
+                    <h1>
+                        关于使用Maven+Hadoop Client API对集群进行操作的说明
+                    </h1>
+                </div>
+                <div class="info">
+                    <span class="date">
+                        <i aria-label="icon: calendar" class="anticon anticon-calendar"><svg viewBox="64 64 896 896" data-icon="calendar" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"></path></svg></i>
+                        2022/11/28
+                    </span>
+
+                    
+                        <span class="category">
+                            <a href="/categories/学习笔记">
+                                <i aria-label="icon: book" class="anticon anticon-book"><svg viewBox="64 64 896 896" data-icon="book" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class=""><path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32zm-260 72h96v209.9L621.5 312 572 347.4V136zm220 752H232V136h280v296.9c0 3.3 1 6.6 3 9.3a15.9 15.9 0 0 0 22.3 3.7l83.8-59.9 81.4 59.4c2.7 2 6 3.1 9.4 3.1 8.8 0 16-7.2 16-16V136h64v752z"></path></svg></i>
+                                学习笔记
+                            </a>
+                        </span>
+                        
+
+                            
+
+                                <span class="tags">
+                                    
+                                        <span class="tag">
+                                            
+                                                <a href="/tags/hadoop" style=color:#ff7d73>
+                                                        hadoop
+                                                </a>
+                                        </span>
+                                        
+                                        <span class="tag">
+                                            
+                                                <a href="/tags/maven" style=color:#00a596>
+                                                        maven
+                                                </a>
+                                        </span>
+                                        
+                                        <span class="tag">
+                                            
+                                                <a href="/tags/idea" style=color:#ffa2c4>
+                                                        idea
+                                                </a>
+                                        </span>
+                                        
+                                        <span class="tag">
+                                            
+                                                <a href="/tags/java" style=color:#ff7d73>
+                                                        java
+                                                </a>
+                                        </span>
+                                        
+                                </span>
+                                
+                </div>
+            </div>
+        </div>
+        <!--博客容器-->
+        <div class="content" v-pre>
+
+            <!--程序:目录-->
+            <div id="fancycard" class="quickcard btncard-hide" style="position: fixed;z-index: 999;">
+                 
+
+    <div id="toc" class="toc_main">
+        <strong class="sidebar-title">目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%80%BB%E8%A7%88"><span class="toc-text">代码总览</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%A8%E8%8D%90%E5%B7%A5%E5%85%B7"><span class="toc-text">推荐工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9B%B4%E5%A4%9A%E8%B5%84%E6%BA%90%E4%B8%8E%E6%95%99%E7%A8%8B%E4%BC%A0%E9%80%81%E9%97%A8"><span class="toc-text">更多资源与教程传送门</span></a></li></ol>
+    </div>
+
+            </div>
+
+            
+                <div class="uico" style="background-color: #d7a1c1;">
+                    <div class="co_main" style="color:#fff">前言</div>
+                    <div class="co_sub" style="color:#fff">
+                        此时，一位爱摆烂的老师访问了此帖
+                    </div>
+                </div>
+                
+
+                    <h1 id="代码总览"><a href="#代码总览" class="headerlink" title="代码总览"></a>代码总览</h1><p>pom.xml</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.atguigu&lt;/groupId&gt;
+    &lt;artifactId&gt;HDFSClient&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;8&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;8&lt;/maven.compiler.target&gt;
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.hadoop&lt;/groupId&gt;
+            &lt;artifactId&gt;hadoop-client&lt;/artifactId&gt;
+            &lt;version&gt;3.1.3&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.12&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+            &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+            &lt;version&gt;1.7.30&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;
+</code></pre>
+<p>HdfsClient.java</p>
+<pre><code class="java">package com.atguigu;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * 此程序需求:
+ * 1.连接haddop102，并控制这个地址下的用户执行hadoop
+ *
+ * 2.创建文件路径: /xiyou/huaguoshan
+ *
+ */
+
+public class HdfsClient &#123;
+
+    private FileSystem fs;
+
+    @Before
+    public void init() throws URISyntaxException, IOException, InterruptedException &#123;
+        URI uri = new URI(&quot;hdfs://hadoop102:8020&quot;);         // java.net包下的URI
+        Configuration conf = new Configuration();               //org.appache.hadoop.conf包下的Configuration
+        String user = &quot;atguigu&quot;;                                 //双参数未指定user会Permission denied
+        //org.appache.hadoop.fs包下的FileSystem
+        fs = FileSystem.get(uri, conf, user);                       // ctrl+alt+f 局部变量变全局
+    &#125;
+
+    @After
+    public void close() throws IOException &#123;
+        fs.close();
+    &#125;
+
+    @Test
+    public void testmkdir() throws IOException &#123;
+        fs.mkdirs(new Path(&quot;/xiyou/huaguoshan&quot;));      //org.appache.hadoop.fs包下的Path
+    &#125;
+&#125;
+</code></pre>
+<h1 id="推荐工具"><a href="#推荐工具" class="headerlink" title="推荐工具"></a>推荐工具</h1><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>maven</td>
+<td>3.8.4(更新版本会不兼容)</td>
+</tr>
+<tr>
+<td>Intellij IDEA 专业版</td>
+<td>2021.3(需要激活，新版可能有)</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>1.8.0_212(推荐使用，只能用1.8的任何一个版本)</td>
+</tr>
+</tbody></table>
+<h1 id="更多资源与教程传送门"><a href="#更多资源与教程传送门" class="headerlink" title="更多资源与教程传送门"></a>更多资源与教程传送门</h1><a class="uico waves-effect waves-light" target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Qp4y1n7EN?p=46">
+    <div class="co_main">尚硅谷大数据Hadoop教程 <svg style="padding-top: 6px;" viewbox="32 48 898 898" width="1em" height="1em" fill="rgb(65, 65, 65)" aria-hidden="true" focusable="false"><path d="M912 302.3L784 376V224c0-35.3-28.7-64-64-64H128c-35.3 0-64 28.7-64 64v576c0 35.3 28.7 64 64 64h592c35.3 0 64-28.7 64-64V648l128 73.7c21.3 12.3 48-3.1 48-27.6V330c0-24.6-26.7-40-48-27.7zM712 792H136V232h576v560zm176-167l-104-59.8V458.9L888 399v226zM208 360h112c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H208c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8z"/></svg>
+    </div>
+    <div class="co_sub">API的准备</div>
+</a>
+
+<a class="uico waves-effect waves-light" target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Qp4y1n7EN?p=47">
+    <div class="co_main">尚硅谷大数据Hadoop教程 <svg style="padding-top: 6px;" viewbox="32 48 898 898" width="1em" height="1em" fill="rgb(65, 65, 65)" aria-hidden="true" focusable="false"><path d="M912 302.3L784 376V224c0-35.3-28.7-64-64-64H128c-35.3 0-64 28.7-64 64v576c0 35.3 28.7 64 64 64h592c35.3 0 64-28.7 64-64V648l128 73.7c21.3 12.3 48-3.1 48-27.6V330c0-24.6-26.7-40-48-27.7zM712 792H136V232h576v560zm176-167l-104-59.8V458.9L888 399v226zM208 360h112c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H208c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8z"/></svg></div>
+    <div class="co_sub">API创建文件夹</div>
+</a>
+
+        </div>
+        <!--程序:阅读进度-->
+        
+
+                <!--评论区必备插件-->
+                
+                    <link rel="stylesheet" href="https://cdn.staticfile.org/waline/2.9.1/waline.min.css" />
+                    <div id="comment">
+                        <div id="waline-container"></div>
+                    </div>
+                    
+    </div>
+                         
+<footer id="footer">
+    <div class="footer-wrap" style="z-index: 1;">
+        <div></div>
+        <div><a target="_blank" rel="noopener" href="https://riru233.github.io/">Particle S主题</a>基于</div>
+        <div><a target="_blank" rel="noopener" href="https://hexo.io/">Hexo引擎</a> 与 <a target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle主题</a> 深度定制</div>
+        <div>
+            Copyright 2017 - 2023 Particle S Demo @ Hizuna
+        </div>
+        
+    </div>
+
+</footer>
+                    </div>
+                </div>
+                
+            </transition>
+            
+        </div>
+
+        <!-- 功能按钮块 -->
+        <div id="layout2" style="transition: all 9s;">
+            <!--手机端按钮支持-->
+<div id="quickcard">
+
+    <!--按钮实现-->
+    <a id="btnshow" class="float-button">
+        <svg viewBox="64 64 896 896" data-icon="arrow-left" width="2em" height="2em" fill="#ff237b" aria-hidden="true" focusable="false">
+            <path d="M464 144H160c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V160c0-8.8-7.2-16-16-16zm-52 268H212V212h200v200zm452-268H560c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V160c0-8.8-7.2-16-16-16zm-52 268H612V212h200v200zM464 544H160c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V560c0-8.8-7.2-16-16-16zm-52 268H212V612h200v200zm452-268H560c-8.8 0-16 7.2-16 16v304c0 8.8 7.2 16 16 16h304c8.8 0 16-7.2 16-16V560c0-8.8-7.2-16-16-16zm-52 268H612V612h200v200z"></path>
+        </svg>
+    </a>
+
+    <!--按钮点击事件-->
+    <script>
+        document.querySelector("#btnshow").onclick = function (e) {   //展示
+            window.event ? window.event.cancelBubble = true : e.stopPropagation();
+            document.querySelector("#fancycard").className = 'quickcard btncard-show';
+        };
+
+        document.onclick = function (e) {                           //隐藏
+            var e = e || window.event; //浏览器兼容性 
+            var elem = e.target || e.srcElement;
+            console.log(elem.getAttribute('class'))
+            while (elem) { //循环判断至跟节点，防止点击的是div#test子元素 
+                if (elem.id && elem.id == 'fancycard') {
+                    return;
+                }
+                elem = elem.parentNode;
+            }
+            document.querySelector("#fancycard").className = 'quickcard btncard-hide';
+        }
+    </script>
+</div>
+            
+<!--aplayer支持-->
+
+
+        </div>
+
+        <!-- 加插件 -->
+        <script>
+    const App = Vue.createApp({
+        data() {
+            return {
+                showpage: false,
+                menushow: false,
+                cardtop: 100,
+                barlocal: 0,
+            };
+        },
+        created() {
+            let that = this;
+            window.addEventListener("load", () => {
+                that.showpage = true;
+                document.getElementById("loading").style.opacity = 0;
+                document.getElementById("loading").style.visibility = "hidden";
+            });
+        },
+        mounted() {
+            if (document.getElementById("home-head"))
+                document.getElementById("menu").className += " menu-color";
+            window.addEventListener("scroll", this.handleScroll, true);
+            let codes = document.getElementsByTagName("pre");
+            let copying = false;
+            for (let code of codes) {
+                const lang =
+                    code?.firstChild.className.split(/\s+/).filter(x => {
+                        return x != "sourceCode";
+                    })[0] || "text";
+            }
+        },
+        methods: {
+            home_click() {
+                window.scrollTo({
+                    top: window.innerHeight,
+                    behavior: "smooth",
+                });
+            },
+            handleScroll() {
+                let newlocal = document.documentElement.scrollTop;
+                let menu = document.getElementById("menu");
+                let wrap = document.getElementById("home-posts-wrap");
+                let footer = document.getElementById("footer");
+                let that = this;
+                if (this.barlocal < newlocal) {
+                    menu.className = "hidden-menu";
+                    that.menushow = false;
+                } else menu.className = "show-menu";
+                if (wrap) {
+                    if (newlocal <= window.innerHeight - 100) menu.className += " menu-color";
+                    if (newlocal <= 400) {
+                        wrap.style.top = -newlocal / 5 + "px";
+                    } else if (wrap.style.top != "-80px" || footer.style.top != "70px") {
+                        wrap.style.top = "-70px";
+                    }
+                }
+                this.barlocal = newlocal;
+            },
+        },
+    });
+    App.mount("#layout");
+</script>
+
+
+<!--评论区-->
+
+    <script src="https://cdn.staticfile.org/waline/2.9.1/waline.min.js"></script>
+    <script>
+        Waline.init({
+            el: '#waline-container',
+            serverURL: "https://waline-comment-p91g7g1ok-riru233.vercel.app",
+            commentCount: true,
+            pageview: false,
+            emoji: "https://unpkg.com/@waline/emojis@1.0.1/weibo,https://unpkg.com/@waline/emojis@1.0.1/alus,https://unpkg.com/@waline/emojis@1.0.1/bilibili,https://unpkg.com/@waline/emojis@1.0.1/qq,https://unpkg.com/@waline/emojis@1.0.1/tieba,https://unpkg.com/@waline/emojis@1.0.1/tw-emoji".split(','),
+            meta: "nick,mail,link".split(','),
+            requiredMeta: "nick".split(','),
+            lang: "zh-CN",
+            wordLimit: 0,
+            pageSize: "10",
+            login: "enable",
+            locale: {}
+        });
+    </script>
+    
+<!-- 浏览进度功能实现 -->
+<script data-pjax>
+document.addEventListener('DOMContentLoaded', function () {
+    var winHeight = window.innerHeight,
+        docHeight = document.querySelector.scrollHeight,
+        progressBar = document.getElementById('insert');   //选定进度条
+    progressBar.max = docHeight - winHeight;
+    progressBar.value = window.scrollY;
+
+    document.addEventListener('scroll', function () {
+        progressBar.max = document.documentElement.scrollHeight - window.innerHeight;
+        progressBar.value = window.scrollY;
+        var insertDiv = document.getElementById("insert");
+        progress = (progressBar.value / progressBar.max) * 100 + 1 >> 0;
+        insertDiv.innerHTML = progress + "%";
+    });
+});
+</script>
+
+
+<!-- Materialize选项打开 -->
+<script>
+    $(document).ready(function(){
+        $('.tooltipped').tooltip();
+    });
+
+    $('.dropdown-trigger').dropdown();
+</script>
+
+        <script src="/js/matery.js"></script>
+        
+        <script data-pjax src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>
+        <script data-pjax src="/js/particle.js"></script>
+        
+        <!-- Pjax内核 -->
+        <script>
+            /* Pjax加载 */
+                var pjax = new Pjax({
+                // 这里填写页面中改变的部分（和 CSS 选择器用法一样）
+                    selectors: ["head title", "#main"],
+                });
+            /* Pjax重载js文件 */
+                $("script[data-pjax], .pjax-reload script").each(function () {
+                    $(this).parent().append($(this).remove());
+                });
+            /* pjax加载时的进度条 */
+                var loadingBar = document.querySelector(".loading-bar");
+                var progress = document.querySelector(".loading-bar .progress");
+                var timer = null;
+
+                // Pjax 开始时执行的函数
+                document.addEventListener("pjax:send", function () {
+                // 进度条默认已经加载 20%
+                var loadingBarWidth = 20;
+                // 进度条的最大增加宽度
+                var MAX_LOADING_WIDTH = 95;
+
+                // 显示进度条
+                loadingBar.classList.add("loading");
+                // 初始化进度条的宽度
+                progress.style.width = loadingBarWidth + "%";
+
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    // 进度条的增加速度（可以改为一个随机值，显得更加真实）
+                    loadingBarWidth += 3;
+
+                    // 当进度条到达 95% 后停止增加
+                    if (loadingBarWidth > MAX_LOADING_WIDTH) {
+                    loadingBarWidth = MAX_LOADING_WIDTH;
+                    }
+
+                    progress.style.width = loadingBarWidth + "%";
+                }, 500);
+                });
+
+                // Pjax 完成之后执行的函数
+                document.addEventListener("pjax:complete", function () {
+                clearInterval(timer);
+                progress.style.width = "100%";
+                loadingBar.classList.remove("loading");
+
+                setTimeout(function () {
+                    progress.style.width = 0;
+                }, 400);
+                });
+        </script>
+        <!-- 主题切换模块 -->
+        <script>
+            //主题显示
+            //定义显示函数
+            function displaynone() {
+                document.querySelector("#confont").setAttribute("style", "");
+                document.querySelector("#layout").setAttribute("style", "display: none");
+                document.querySelector("#layout2").setAttribute("style", "display: none");
+                document.querySelector("#themechg").setAttribute("style", "height: 100%; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;z-index: 1999;");
+            };
+            function displayreturn() {
+                setTimeout(function () {
+                    document.querySelector("#confont").setAttribute("style", "visibility: hidden");
+                    document.querySelector("#layout").setAttribute("style", "");
+                    document.querySelector("#layout2").setAttribute("style", "");
+                    document.querySelector("#themechg").setAttribute("style", "visibility: hidden");
+                }, 1500)
+            };
+                    
+            //调用函数
+            document.querySelector("#thememaiden").onclick = function (e) {   //展示
+                displaynone();
+                document.querySelector("#themestyle").innerHTML = "<link rel='stylesheet' href='/css/maiden-theme.css'>";
+                displayreturn();
+            };
+            document.querySelector("#themenight").onclick = function (e) {   //展示
+                displaynone();
+                document.querySelector("#themestyle").innerHTML = "<link rel='stylesheet' href='/css/night-theme.css'>";
+                displayreturn();
+            };
+            document.querySelector("#themefull").onclick = function (e) {   //展示
+                displaynone();
+                document.querySelector("#themestyle").innerHTML = "<link rel='stylesheet' href='/css/full-theme.css'>";
+                displayreturn();
+            };
+        </script>
+
+    <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/assets/z16.model.json"},"display":{"superSample":1,"width":200,"height":400,"position":"left","hOffset":400,"vOffset":-60},"mobile":{"show":false}});</script></body>
+</html>

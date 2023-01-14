@@ -1,0 +1,34 @@
+#archives {
+  position: relative;
+  top: 100px;
+  margin: auto;
+  padding: 20px;
+}
+#archives a,
+#archives .tag-icon {
+  color: label-font;
+  text-decoration: none;
+}
+#archives .tags {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+#archives .tags .tag {
+  margin-right: 10px;
+}
+#archives h2 {
+  font-weight: normal !important;
+  text-align: left !important;
+  color: posts-title !important;
+  text-decoration: none !important;
+}
+#archives .category-and-date {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #9e9e9e;
+  text-align: left;
+}
+#archives .category-and-date .category {
+  padding-right: 25px;
+}
